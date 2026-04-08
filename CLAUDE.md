@@ -81,6 +81,31 @@ quarto render                            # both formats, both documents
 quarto render report.qmd --to html       # one document, one format
 ```
 
+## Codex / OpenCode Delegation Infrastructure
+
+The fork-terminal skill at `C:\Users\Mike\.claude\skills\fork-terminal\` is
+installed with the following executors (copied from agent-os WSL repo on
+2026-04-08 — see commit log):
+
+| Executor | Purpose |
+|---|---|
+| `fork_terminal.py` | Core: open a new terminal window with a command (Windows-specific build, do not overwrite) |
+| `codex_task_executor.py` | Run a Codex CLI task with prompt-file → done.json convention |
+| `codex_prp_executor.py` | Run a Codex PRP execution pipeline |
+| `opencode_task_executor.py` | Run an OpenCode CLI task with workflow cascade routing |
+| `cascade_router.py` | Resolve workflow → agent + model + fallback chain |
+
+The workflow cascade config is at `C:\Users\Mike\.claude\workflow_cascades.json`
+and defines six workflows: `coding`, `validation`, `research`, `documentation`,
+`security`, `exploration`. The `cascade_router._find_config()` and
+`_load_config()` functions are tested and working on Windows.
+
+This infrastructure is the foundation for the Quarto worker agents
+(`qmd-section-writer`, `qmd-stitcher`, `qmd-source-surveyor`) which will
+follow the codex-delegator pattern from `agent-os`. See the agent design
+discussion in conversation history (or the upcoming `.claude/agents/`
+directory once those agents are built).
+
 `QUARTO_PYTHON` MUST point at the project venv. Never let Quarto fall
 back to system Python (see global memory for the rule). The `_freeze/`
 cache means re-renders are fast unless code cells change.
