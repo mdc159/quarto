@@ -1041,6 +1041,7 @@ Krytox GPL 205 PFPE grease has a **dynamic μ ≈ 0.07** in ASTM 4-ball wear tes
 |  —  | Krytox GPL 205 (control lubricant, 5 g)    | TMC Industries             |         45 |
 
 Indicative procurement list for the entire rig (April 2025 street pricing, ±10 %).
+:::
 
 With these parts the entire rig, including a Raspberry Pi for auxiliary logging and scripts, comes in under **US $3 500** and will achieve the dwell, break-away, and positional-resolution measurements defined in the expanded test plan.
 

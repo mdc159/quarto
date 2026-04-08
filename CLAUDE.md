@@ -1,36 +1,84 @@
-# D:\Quarto Project Instructions
+# D:\Quarto — Publishing Workspace Instructions
 
-This is a Quarto-based publishing project for opto-mechanical engineering
-research reports and test plans. The goal is to convert AI-generated
-markdown drafts into reproducible, multi-format Quarto documents
-(HTML + PDF) with executable Python (and eventually MATLAB via the
-matlab-mcp server) cells producing real figures.
+This is a Quarto-based publishing **workspace** for opto-mechanical
+engineering research reports, test plans, trade studies, and other
+technical documents. Each document set lives in its own subfolder under
+`projects/`. Shared resources (bibliography, brand assets, agents,
+templates, scripts, venv) live at the workspace level.
 
-## Project Layout
+The goal is to convert AI-generated markdown drafts into reproducible,
+multi-format Quarto documents (HTML + PDF) with executable Python (and
+eventually MATLAB via the matlab-mcp server) cells producing real figures.
+
+## Workspace Layout
 
 ```
 D:\Quarto\
-├── _quarto.yml          Project config — controls all output formats
-├── CLAUDE.md            (this file)
-├── refs.bib             Shared BibTeX bibliography
-├── ieee.csl             IEEE citation style
-├── report.qmd           Research report
-├── test-plan.qmd        Validation test plan (follows up on report)
-├── *.R2.md              ORIGINAL AI-generated source (preserved, do not edit)
-├── .venv/               uv-managed Python venv (jupyter, numpy, matplotlib, pandas)
-├── figures/             Static images referenced by .qmd files
-├── _scripts/            One-shot transformation scripts (reusable for new docs)
-├── _freeze/             Quarto cell-output cache (auto-managed)
-└── _output/             Rendered HTML and PDF (the deliverables)
+├── CLAUDE.md                     (this file — workspace instructions)
+├── .gitignore
+├── .git/
+│
+├── .claude/
+│   └── agents/                   workspace-local agents (research-publisher, etc.)
+│
+├── _shared/                      shared across ALL projects in this workspace
+│   ├── _metadata.yml             shared Quarto YAML (formats, LaTeX preamble, exec)
+│   ├── refs.bib                  master BibTeX bibliography
+│   ├── ieee.csl                  IEEE citation style
+│   ├── _brand.yml                (future) group visual identity
+│   ├── templates/                (future) document type templates
+│   └── prompts/                  (future) worker brief templates
+│
+├── _scripts/                     transformation script library (reusable)
+│   ├── transform_*.py
+│   ├── clean_parts_tables.py
+│   └── make_fixture_schematic.py
+│
+├── _state/                       orchestrator state (per-project subdirs)
+│   └── <project>/
+│       ├── manifest.yml
+│       ├── claims.yml
+│       └── briefs/
+│
+├── _scratch/                     throwaway: prompt files, intermediate logs
+│
+├── .venv/                        workspace-shared Python venv (uv-managed)
+│
+└── projects/
+    └── galling-mitigation/       FIRST PROJECT (current)
+        ├── _quarto.yml           project config (inherits ../../_shared/_metadata.yml)
+        ├── report.qmd
+        ├── test-plan.qmd
+        ├── refs.bib              (optional) project-specific cite additions
+        ├── figures/
+        │   └── fixture-schematic.png
+        ├── source/               original AI-generated source files (preserved)
+        │   ├── report.R2.md
+        │   └── test_plan.R2.md
+        ├── _freeze/              Quarto cell-output cache (committed)
+        └── _output/              rendered HTML + PDF (gitignored, regenerable)
+```
+
+## Adding a New Project
+
+```bash
+# From the workspace root:
+mkdir -p projects/<new-project>/source
+cp <wherever>/draft.md projects/<new-project>/source/
+
+# Create projects/<new-project>/_quarto.yml mirroring the galling-mitigation one
+# Then invoke the research-publisher agent (when it exists):
+#   "Use research-publisher to convert projects/<new-project>/source/draft.md"
 ```
 
 ## Render Workflow
 
 ```bash
-cd D:/Quarto
+# From the project directory (NOT the workspace root):
+cd D:/Quarto/projects/galling-mitigation
 export QUARTO_PYTHON=/d/Quarto/.venv/Scripts/python.exe
-quarto render                          # both formats, both documents
-quarto render report.qmd --to html     # one document, one format
+quarto render                            # both formats, both documents
+quarto render report.qmd --to html       # one document, one format
 ```
 
 `QUARTO_PYTHON` MUST point at the project venv. Never let Quarto fall

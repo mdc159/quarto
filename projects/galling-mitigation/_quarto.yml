@@ -1,0 +1,29 @@
+# =============================================================================
+# Galling-mitigation project — Quarto config
+# =============================================================================
+# Inherits shared workspace metadata (formats, bibliography, LaTeX preamble,
+# numbering, TOC) from ../../_shared/_metadata.yml. Only project-specific
+# values live here.
+# =============================================================================
+
+project:
+  type: default
+  output-dir: _output
+  render:
+    - report.qmd
+    - test-plan.qmd
+
+metadata-files:
+  - ../../_shared/_metadata.yml
+
+# Bibliography lives at the workspace level (shared across all projects).
+# Paths here are relative to this _quarto.yml file.
+bibliography:
+  - ../../_shared/refs.bib
+csl: ../../_shared/ieee.csl
+
+# Tell Pandoc where to look for resources (CSL, images, etc.)
+# Required because Pandoc strips relative paths during CSL lookup.
+resource-path:
+  - .
+  - ../../_shared
