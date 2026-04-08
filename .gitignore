@@ -1,0 +1,83 @@
+# =============================================================================
+# Quarto publishing workspace .gitignore
+# =============================================================================
+
+# -------- Python virtual environment (workspace-shared) ---------------------
+# The venv is large and machine-specific. Recreate with:
+#   uv venv .venv && uv pip install --python .venv/Scripts/python.exe \
+#     jupyter numpy matplotlib pandas
+.venv/
+env/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# -------- Quarto internal state ---------------------------------------------
+# .quarto/ holds Quarto's project cache (build state, search index, etc.)
+.quarto/
+
+# Render artifacts that Quarto puts alongside source .qmd files for PDF
+# (separate from _output/). Regenerated on every PDF render.
+report_files/
+test-plan_files/
+*_files/figure-pdf/
+*_files/figure-html/libs/
+
+# -------- Rendered output (regenerable) -------------------------------------
+# These are the deliverables — easy to regenerate from source. Excluded
+# from version control to keep the repo lean. Run `quarto render` to rebuild.
+_output/
+projects/*/_output/
+
+# -------- Quarto _freeze cache ----------------------------------------------
+# IMPORTANT: Quarto recommends committing _freeze/ so that downstream
+# users get cached cell outputs without needing to re-run computations.
+# We INCLUDE it here. Comment the next line out if your repo gets too large.
+# _freeze/
+
+# -------- LaTeX intermediate files ------------------------------------------
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+# .log is too broad — be specific
+*.tex.bak
+
+# -------- Orchestrator scratch + state --------------------------------------
+# Throwaway: prompt files, partials, intermediate logs
+_scratch/
+# Keep _state/ structure but exclude per-run scratch
+_state/*/briefs/
+_state/*/.tmp/
+_state/*/*.lock
+
+# -------- IDE / editor noise ------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# -------- Personal / local overrides ----------------------------------------
+.env
+.env.local
+*.local.yml
+local.settings.json
+
+# -------- Logs (selective) --------------------------------------------------
+fork-terminal.log
+quarto-render.log

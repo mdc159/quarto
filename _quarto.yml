@@ -1,0 +1,74 @@
+project:
+  type: default
+  output-dir: _output
+  render:
+    - report.qmd
+    - test-plan.qmd
+
+# Shared settings for all documents in the project
+execute:
+  echo: true
+  warning: false
+  freeze: auto          # only re-run code when source changes
+
+number-sections: true
+number-depth: 3
+
+toc: true
+toc-depth: 3
+
+bibliography: refs.bib
+csl: ieee.csl
+link-citations: true
+
+crossref:
+  fig-title: "Figure"
+  tbl-title: "Table"
+  eq-prefix: "Eq."
+
+# Multi-format output: PDF for formal distribution, HTML for interactive review
+format:
+  html:
+    theme: cosmo
+    toc-location: left
+    code-fold: true
+    code-summary: "Show code"
+    code-tools: true
+    code-line-numbers: true
+    citation-hover: true      # hover over citations to see full reference
+    fig-align: center
+    fig-format: svg
+    lightbox: true            # click-to-zoom on figures
+    fontsize: 1.05em
+    linestretch: 1.4
+  pdf:
+    documentclass: article
+    papersize: letter
+    fontsize: 10pt
+    geometry:
+      - margin=0.85in
+    colorlinks: true
+    fig-align: center
+    fig-format: pdf
+    fig-dpi: 300
+    keep-tex: false
+    tbl-cap-location: top
+    include-in-header:
+      - text: |
+          \usepackage{booktabs}
+          \usepackage{siunitx}
+          \usepackage{array}
+          \usepackage{makecell}
+          \usepackage{tabularx}
+          \usepackage{ltablex}
+          \keepXColumns
+          % Make all longtables use a smaller font so wide content fits
+          \AtBeginEnvironment{longtable}{\footnotesize}
+          % Allow longtable cells to wrap on word boundaries
+          \renewcommand{\arraystretch}{1.15}
+          % Tighter spacing around longtables
+          \setlength{\LTpre}{6pt}
+          \setlength{\LTpost}{6pt}
+          % Force URLs to break inside cells
+          \usepackage{xurl}
+          \urlstyle{same}
