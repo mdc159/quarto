@@ -1,0 +1,27 @@
+---
+title: "Compliance Volume Replacement Concept Trade Study"
+subtitle: "Replacement of the Foil Breather Bag and Outward-Only Check Valve"
+author: "Opto-Mechanical Engineering Group"
+date: today
+date-format: "MMMM D, YYYY"
+abstract: |
+  The shipping failure mechanism analyzed in the companion specification
+  document establishes that the present passive foil-bag and outward-only
+  check-valve concept cannot guarantee nonnegative gauge pressure in the
+  manifolded nitrogen system on the return leg. This document develops the
+  engineering response: a mathematical model for the required compliance
+  volume, three concept variants for the replacement device, a decision
+  matrix, and a bench proof-of-concept plan.
+keywords:
+  - compliance volume
+  - bellows
+  - shipping qualification
+  - nitrogen purge
+  - optical contamination control
+---
+
+# Stub
+
+This document is a placeholder. Detailed sections are built after the
+companion `failure-mechanism.qmd` is approved. See `_state/shipping/manifest.yml`
+for the planned section list.

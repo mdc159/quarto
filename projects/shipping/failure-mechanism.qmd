@@ -1,0 +1,212 @@
+---
+title: "Shipping Failure Mode of the Nitrogen-Purged Optical Assembly"
+subtitle: "Return-Leg Underpressure Following Irreversible Mass Loss"
+author: "Opto-Mechanical Engineering Group"
+date: today
+date-format: "MMMM D, YYYY"
+abstract: |
+  The nitrogen-purged optical assembly fails by return-leg underpressure
+  on the low-pressure side of the shipping cycle, not by outbound
+  overpressure on the high-pressure side. The current foil breather bag
+  and outward-only check valve cannot prevent this failure because the bag
+  is a temporary volume buffer rather than a mass reservoir, and the
+  outward-only valve is structurally incapable of operating during the
+  sub-atmospheric phase. Once the bag saturates and nitrogen vents during
+  ascent and heating, the retained nitrogen inventory is permanently
+  reduced. On descent and cooling, the bag collapses and the remaining gas
+  is insufficient to maintain ambient pressure in the rigid connected
+  volume. Distributed seals throughout the manifolded assembly then become
+  inward leakage paths, and atmospheric contamination is thermodynamically
+  favored. Confirmed field failures (moisture ingress and biological
+  growth in previously purged optical modules) are the observed
+  consequence of this mechanism. Two closed-form thresholds and a
+  quantitative simulation of the round-trip cycle establish the design
+  envelope. The single critical unknown is $V_{fixed}$, the total rigid
+  nitrogen volume of the interconnected modules, tubing, and manifolds.
+  Measuring $V_{fixed}$ is the highest-priority next action.
+keywords:
+  - nitrogen purge
+  - shipping qualification
+  - compliance volume
+  - sub-atmospheric pressure
+  - optical contamination
+  - thermodynamic failure analysis
+---
+
+# Summary {#sec-summary}
+
+The shipping concept for the nitrogen-purged optical assembly relies on a
+foil compliance bag and an outward-only check valve. A design review
+focused on the high-pressure side of the transport cycle concludes that
+the present 0.5 bar safety relief valve handles outbound overpressure
+with margin. That conclusion is correct on its own terms, but it does
+not address the actual failure mode.
+
+The actual failure is **return-leg underpressure** following
+**irreversible nitrogen mass loss**. During ascent and heating, the
+internal nitrogen expands. If the bag saturates before reaching its
+maximum volume, internal pressure rises and the outward-only valve vents
+nitrogen to ambient. This is a one-way thermodynamic event: the retained
+mole inventory is permanently reduced. On descent and cooling the bag
+contracts, and if the bag fully collapses while the remaining nitrogen
+is insufficient to fill the rigid connected volume at the return
+temperature, the internal pressure falls below ambient. The distributed
+seal network of the manifolded assembly is positive-pressure energized.
+It is not qualified for sub-atmospheric internal conditions. Atmospheric
+ingress through any joint or seal is then thermodynamically favored.
+
+The mechanism does not depend on valve back-leakage or bag elasticity
+assumptions. Even an ideal outward-only valve and an ideal zero-stiffness
+bag exhibit this failure once the rigid connected volume exceeds a
+critical threshold. Two closed-form expressions govern the design space:
+the largest rigid volume that avoids any outbound venting (@eq-no-vent),
+and the smallest rigid volume that goes sub-atmospheric on the return
+leg after venting (@eq-return-threshold). For the present 22 L bag and
+the standard ICAO/FAA shipping envelope, these thresholds are
+approximately **15 L** and **52 L** respectively. The actual rigid
+nitrogen volume of the production hardware, $V_{fixed}$, is unmeasured.
+Where $V_{fixed}$ falls relative to those thresholds determines whether
+the present concept can succeed.
+
+The recommended action is to measure $V_{fixed}$ first, and to evaluate
+the present concept against @eq-no-vent and @eq-return-threshold rather
+than against an outbound peak-pressure criterion alone.
+
+# System Description {#sec-system}
+
+The shipped article is a manifolded optical assembly composed of multiple
+sealed aluminum optical modules connected to a common nitrogen space
+through PFA interconnect tubing and intake/exhaust manifolds. The total
+internal nitrogen space is the sum of the module interiors, the
+interconnect tubing, the manifold volumes, and the shipping-time
+compliance bag. All of these volumes communicate freely through the
+manifold network and behave thermodynamically as a single connected gas
+volume.
+
+In operation, a continuous nitrogen purge maintains positive gauge
+pressure throughout the assembly. Every joint and seal in the assembly
+is positive-pressure energized: the seating force comes from the
+positive internal-to-ambient pressure differential. These seals are not
+qualified for sub-atmospheric internal conditions. If the internal
+pressure ever falls below ambient, seating force is lost and the seal
+admits ambient air through the same path it normally exhausts nitrogen.
+
+During shipping, the continuous purge is unavailable. The assembly is
+sealed at atmospheric pressure with a fixed initial nitrogen mass, and
+two passive elements are responsible for managing pressure excursions
+across the transport cycle:
+
+1. **Foil compliance bag** — a CALDRY 1500 multilayer foil reservoir
+   that can expand and contract between approximately zero and 22 L. The
+   foil is geometrically compliant but not elastically compliant: it
+   unfolds and refolds between hard geometric limits with negligible
+   restoring force across its usable range.
+
+2. **Outward-only check/vent valve** — permits nitrogen to escape if the
+   internal pressure exceeds ambient by the valve's cracking threshold,
+   but does not admit ambient flow inward. A separate 0.5 bar gauge
+   safety relief valve is retained on the main assembly per the European
+   pressure equipment directive.
+
+@fig-three-regimes shows the intended operating sequence across the
+three regimes of the round-trip cycle. The figure is the visual anchor
+for the failure mechanism developed in @sec-actual-mechanism.
+
+![Pressure-time regimes of the manifolded nitrogen shipping system. Top: ambient (blue) and internal (red) pressure during the four flight phases. Bottom: schematic state of the optical modules and breather bag at each regime. Regime 1 — bag absorbs expansion and internal pressure tracks ambient (safe). Regime 2 — bag has reached maximum volume and the outward-only valve vents nitrogen (irreversible mass loss). Regime 3 — return leg with bag fully collapsed and internal pressure below ambient (failure: ambient ingress through distributed seals).](figures/three-regimes.jpg){#fig-three-regimes fig-alt="Diagram showing pressure vs. time across four flight phases (ascent, cruise, descent, ground) with the internal nitrogen pressure overlaid on the ambient pressure curve. Below the curves are three schematic illustrations of an optical module with a breather bag attached, one for each failure regime. In Regime 1 the bag is partially inflated and internal pressure equals ambient. In Regime 2 the bag is fully inflated and a small arrow shows nitrogen venting outward through the check valve. In Regime 3 the bag is fully collapsed, showing arrows pointing inward at the seal locations as ambient air is drawn in."}
+
+# Transport Envelope {#sec-envelope}
+
+The transport state space is bounded by the shipping specification and
+by the standard atmosphere model used for FAA cabin altitude
+requirements. The relevant extremes are summarized in
+@tbl-transport-envelope.
+
+::: {#tbl-transport-envelope tbl-colwidths="[35,30,35]"}
+
+| Parameter                          | Value                                  | Basis                                  |
+|:-----------------------------------|:---------------------------------------|:---------------------------------------|
+| Temperature range                  | 20 °C to 40 °C                         | Shipping specification                 |
+| Maximum cabin altitude             | ~8,000 ft (2,440 m)                    | FAA 14 CFR §25.841                     |
+| Ambient pressure at cabin altitude | ~0.753 atm (76.3 kPa)                  | ICAO standard atmosphere               |
+| Internal gas                       | Diatomic nitrogen (N₂), ultra-pure     | Purge specification                    |
+| Maximum shipping duration          | 30 to 60 days                          | Operational requirement                |
+| Bag maximum volume $V_{bag,max}$   | 22 L                                   | CALDRY 1500 measured capacity          |
+| Initial bag fill $V_{bag,0}$       | ~11 L (nominal 50 % fill)              | Documented practice; uncontrolled      |
+| Rigid system volume $V_{fixed}$    | **unmeasured**                         | Total of modules + tubing + manifolds  |
+
+Transport envelope and key system parameters. The rigid system volume $V_{fixed}$ is the single most important unknown in the analysis and is the subject of @sec-critical-unknown.
+:::
+
+The 30 to 60 day shipping duration is significant. Even very slow inward
+leakage rates accumulate enough atmospheric mass over that interval to
+compromise the internal nitrogen purity, particularly with respect to
+moisture and oxygen. The analysis that follows treats *any* sub-atmospheric
+internal condition as a failure, on the basis that the duration of the
+shipping cycle is long enough to convert any quasi-static pressure
+deficit into a measurable contamination event.
+
+# Field Contamination History {#sec-field-history}
+
+::: {.callout-important}
+## Confirmed field failures motivated this analysis
+
+Optical assemblies sealed and purged with ultra-pure nitrogen prior to
+shipment have returned from air transport with confirmed **moisture
+ingress** and **biological contamination** (mold growth) inside the
+sealed modules. Disassembly, inspection, cleaning, and re-qualification
+were required.
+
+The contamination was not present at the time of seal-up, and no
+operational use occurred between seal-up and the post-shipment
+inspection. The contamination is therefore attributable to events
+during the transport cycle.
+:::
+
+These field failures predate the introduction of the present breather
+bag and check valve. The original configuration sealed the manifolded
+assembly rigidly at atmospheric pressure with no compliance volume of
+any kind. During air transport the rigidly sealed system experienced
+the same coupled pressure-temperature excursion analyzed in this
+document, but with no compliance reservoir and no outward relief path.
+Internal pressure rose and fell with the round-trip ambient and
+temperature cycle. On the return leg the internal pressure fell below
+ambient, and the positive-pressure-energized seals lost seating force.
+Atmospheric ingress through the distributed seal network introduced
+moisture, oxygen, and particulates to the high-purity nitrogen space.
+
+The breather bag and check valve concept was introduced as a passive
+mitigation of this observed failure. The intent was to provide a
+flexible reservoir that could expand and contract with the gas, and an
+outward-only valve that would prevent inward flow at the bag port. The
+mitigation addresses the *original* failure mode (rigidly sealed
+overpressure followed by post-cooling underpressure) by providing a
+compliance reservoir, but it does not eliminate the underlying
+thermodynamic problem. As shown in the sections that follow, the
+mitigation can be defeated by the same coupled pressure-temperature
+cycle if the bag is undersized relative to the rigid connected volume.
+Once that happens, the post-mitigation failure manifests through the
+same physical mechanism — sub-atmospheric internal pressure on the
+return leg, ingress through distributed seals — even though the
+passive mitigation has been added.
+
+The history establishes two facts that the rest of the document
+relies on. First, the seal network is **observably permeable** to
+atmospheric ingress under sub-atmospheric internal conditions; this
+is not a hypothetical concern. Second, the failure manifests over a
+shipping-duration timescale measured in weeks, which is consistent
+with quasi-static thermodynamics rather than transient dynamic
+overpressure. Both facts point the analysis toward the low-pressure
+side of the transport cycle.
+
+<!-- ============================================================
+     Sections below this line are not yet written. They cover:
+       - high-pressure-only review concession
+       - actual mechanism (three regimes)
+       - first-principles math
+       - quantitative simulation (executable Python cells)
+       - implications
+       - critical unknown V_fixed
+       - conclusions
+       - appendices and references
+     See _state/shipping/manifest.yml for the full plan.
+     ============================================================ -->

@@ -1,0 +1,159 @@
+# =============================================================================
+# Section manifest — shipping project
+# =============================================================================
+# Owned by the (future) research-publisher coordinator. For now, this is the
+# human-readable plan that drives section-by-section conversion in the main
+# conversation. Approved by Mike on 2026-04-08.
+# =============================================================================
+
+project: shipping
+documents:
+
+  - id: failure-mechanism
+    file: failure-mechanism.qmd
+    title: "Shipping Failure Mode of the Nitrogen-Purged Optical Assembly:
+            Return-Leg Underpressure Following Irreversible Mass Loss"
+    purpose: |
+      Persuasive specification document. Establishes that the failure mode
+      is return-leg underpressure on the low-pressure side, NOT outbound
+      overpressure on the high-pressure side. Stands alone as the problem
+      statement; the design response lives in the companion document.
+    audience: engineering review board, design colleagues currently focused on the wrong failure mode
+    length_target: 10-15 pages
+
+    sections:
+      - id: summary
+        title: Summary
+        type: synthesis
+        depends_on: [conclusions]
+        placement: front
+        status: pending
+
+      - id: system
+        title: System Description
+        type: framing
+        depends_on: []
+        sources: [Breather_Bag_Analysis_Rev3 §3.1, REVIEW_AND_FILE_DESCRIPTIONS.md]
+        figures: [fig-three-regimes]
+        status: pending
+
+      - id: envelope
+        title: Transport Envelope
+        type: framing
+        depends_on: []
+        sources: [Breather_Bag_Analysis_Rev3 §3.2]
+        tables: [tbl-envelope]
+        status: pending
+
+      - id: field-history
+        title: Field Contamination History
+        type: motivation
+        depends_on: []
+        sources: [Breather_Bag_Analysis_Rev3 §2.1, §2.2]
+        callout: important
+        status: pending
+
+      - id: high-pressure-concession
+        title: What a High-Pressure-Only Review Concludes
+        type: concession
+        depends_on: [system, envelope]
+        sources: [Breather_Bag_Analysis_Rev3 §4.2]
+        tables: [tbl-outbound-scenarios]
+        callout: warning
+        status: pending
+
+      - id: actual-mechanism
+        title: The Actual Failure Mechanism
+        type: analysis
+        depends_on: [high-pressure-concession]
+        sources: [Physics_of_the_Shipping_Failure_Mode.md]
+        figures: [fig-three-regimes]
+        status: pending
+
+      - id: math
+        title: First-Principles Thermodynamic Analysis
+        type: derivation
+        depends_on: [actual-mechanism]
+        sources: [Thermodynamic_Failure_Mechanism_Subsection.docx]
+        equations: 16
+        notes: source already in preferred voice — minimal editing
+        status: pending
+
+      - id: simulation
+        title: Quantitative Demonstration
+        type: computational
+        depends_on: [math]
+        sources: [nitrogen_shipping_failure_model.py]
+        code_cells:
+          - lang: python
+            label: fig-pressure-time-comparison
+            description: safe (V_fixed=40 L) vs failing (V_fixed=60 L) cases
+          - lang: python
+            label: fig-volume-sweep
+            description: min gauge pressure vs rigid system volume — the cliff plot
+        status: pending
+
+      - id: implications
+        title: Why a Passive Bag and Outward-Only Valve Cannot Save This
+        type: synthesis
+        depends_on: [actual-mechanism, math, simulation]
+        status: pending
+
+      - id: critical-unknown
+        title: "The Critical Unknown: V_fixed"
+        type: action
+        depends_on: [math, simulation]
+        callout: tip
+        status: pending
+
+      - id: conclusions
+        title: Conclusions
+        type: synthesis
+        depends_on: [implications, critical-unknown]
+        status: pending
+
+      - id: appendix-model
+        title: "Appendix A — Quasi-Static Model Implementation"
+        type: appendix
+        code_cells:
+          - lang: python
+            echo: true
+            eval: false
+          - lang: matlab
+            echo: true
+            eval: false
+        status: pending
+
+      - id: references
+        title: References
+        type: bibliography
+        status: pending
+
+  - id: compliance-volume-design
+    file: compliance-volume-design.qmd
+    title: "Compliance Volume Replacement Concept Trade Study"
+    purpose: |
+      Engineering response to the failure-mechanism specification.
+      Defines what the replacement device must do, evaluates three concept
+      variants (bellows + gravity, bellows + negator, piston + dual springs),
+      provides decision matrix and bench POC plan.
+    audience: design engineering team, bellows suppliers
+    length_target: 25-30 pages
+    depends_on_doc: failure-mechanism
+
+    sections:
+      - id: summary
+      - id: relationship-to-failure-mechanism
+      - id: existing-concept-and-why-it-cannot-work
+      - id: math-model
+      - id: sizing
+      - id: force-balance-actuator-variants
+      - id: pressure-stability-ratio
+      - id: concept-a-bellows-gravity
+      - id: concept-b-bellows-negator
+      - id: concept-c-piston-dual-springs
+      - id: decision-matrix
+      - id: bench-poc
+      - id: next-steps
+      - id: assumptions-references
+    status: pending  # detailed manifest deferred until failure-mechanism is approved

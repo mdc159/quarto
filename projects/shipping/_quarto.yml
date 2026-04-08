@@ -1,0 +1,30 @@
+# =============================================================================
+# Shipping failure mode project — Quarto config
+# =============================================================================
+# Two documents:
+#   - failure-mechanism.qmd       Specification of the problem and mechanism
+#   - compliance-volume-design.qmd  Engineering response (design trade study)
+#
+# Inherits shared workspace metadata from ../../_shared/_metadata.yml.
+# =============================================================================
+
+project:
+  type: default
+  output-dir: _output
+  render:
+    - failure-mechanism.qmd
+    - compliance-volume-design.qmd
+
+metadata-files:
+  - ../../_shared/_metadata.yml
+
+# Bibliography lives at the workspace level (shared across all projects).
+# Paths here are relative to this _quarto.yml file.
+bibliography:
+  - ../../_shared/refs.bib
+csl: ../../_shared/ieee.csl
+
+# Tell Pandoc where to look for resources (CSL, images, etc.)
+resource-path:
+  - .
+  - ../../_shared
