@@ -1,0 +1,85 @@
+---
+title: "{{TITLE}}"
+subtitle: "Preliminary Investigative Report"
+author: "Opto-Mechanical Engineering Group"
+date: today
+date-format: "MMMM D, YYYY"
+document-type: PIR
+project-code: "{{XX}}"
+status: draft
+keywords: []
+---
+
+<!-- ============================================================
+     PIR Template — Preliminary Investigative Report
+
+     Purpose: Exploratory analysis and modeling to establish what
+     is happening and why. Produces traceable findings (FND-XX-nnn)
+     that drive requirements in a downstream EPS.
+
+     Traceability: Each finding uses a Quarto anchor {#fnd-xx-nnn}
+     so downstream documents can cross-reference with @fnd-xx-nnn.
+     ============================================================ -->
+
+# Summary {#sec-summary}
+
+<!--
+Brief overview of the investigation scope and key findings.
+Write last, after the findings are established.
+-->
+
+# System Description {#sec-system}
+
+<!--
+What is being investigated. Physical description, operating context,
+interfaces. Enough for a reader unfamiliar with the hardware to
+follow the analysis.
+-->
+
+# Operating Envelope {#sec-envelope}
+
+<!--
+The boundary conditions: temperatures, pressures, durations, loads,
+environments. Presented as a summary table with basis/source for
+each parameter.
+-->
+
+# Model {#sec-model}
+
+<!--
+The analytical or computational model used to investigate the system.
+Governing equations, assumptions, simplifications. Executable Python
+cells produce figures directly.
+-->
+
+## Assumptions
+
+<!--
+Numbered list. Each assumption states what is assumed and why.
+Flag assumptions that materially affect the findings.
+-->
+
+## Governing Equations
+
+## Results
+
+# Findings {#sec-findings}
+
+<!--
+Each finding is a discrete, traceable statement of fact established
+by the investigation. Use the format below. Disposition is set when
+the downstream EPS is written — leave as TBD in the PIR.
+
+::: {#fnd-xx-001}
+**FND-XX-001:** [Statement of finding.]
+*Disposition: TBD*
+:::
+-->
+
+# Conclusions {#sec-conclusions}
+
+<!--
+Summary of what the investigation established. No design solutions —
+those belong in the EDS. If the findings point toward a clear next
+action, state it here.
+-->
