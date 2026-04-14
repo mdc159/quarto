@@ -23,8 +23,8 @@ __pycache__/
 # (separate from _output/). Regenerated on every PDF render.
 report_files/
 test-plan_files/
-*_files/figure-pdf/
-*_files/figure-html/libs/
+**/*_files/figure-pdf/
+**/*_files/figure-html/libs/
 
 # -------- Rendered output (regenerable) -------------------------------------
 # These are the deliverables — easy to regenerate from source. Excluded
@@ -63,6 +63,7 @@ _state/*/.tmp/
 _state/*/*.lock
 
 # -------- IDE / editor noise ------------------------------------------------
+.cursor/
 .vscode/
 .idea/
 *.swp
@@ -78,7 +79,11 @@ desktop.ini
 *.local.yml
 local.settings.json
 
+# -------- Jupyter ------------------------------------------------------------
+**/.ipynb_checkpoints/
+
 # -------- Logs (selective) --------------------------------------------------
 fork-terminal.log
 quarto-render.log
+render-debug.log
 quarto_workspace.egg-info/

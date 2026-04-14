@@ -41,7 +41,7 @@ The mechanism does not depend on valve back-leakage or bag leakage. Even an idea
 
 The required next action is to measure $V_{fixed}$ and to evaluate the present concept against @eq-no-vent and @eq-return-threshold rather than against an outbound peak-pressure criterion alone.
 
-A subsequent analysis in @sec-upper-bound derives an analytical upper bound on the maximum overpressure that can develop during any single-flight cycle, and demonstrates that the existing 0.5 bar circuit relief valve cannot open under physically realizable cargo temperatures. The bag vent is therefore unnecessary; its removal eliminates the mass-loss pathway and prevents the return-leg underpressure mechanism entirely.
+A subsequent analysis in @sec-upper-bound derives an analytical upper bound on the maximum overpressure that can develop during any single-flight cycle, and demonstrates that the existing 0.5 bar circuit relief valve cannot open under physically realizable cargo temperatures. Under the validity conditions in @sec-validity-conditions, that bound supports removing the bag vent as a way to eliminate the irreversible mass-loss pathway. The explicit decision framing for that recommendation appears in @sec-decision-status.
 
 # System Description {#sec-system}
 
@@ -75,7 +75,7 @@ The transport state space is bounded by the shipping specification and by the st
 | Initial bag fill $V_{bag,0}$ | \~11 L (nominal 50 percent fill) | Documented practice; uncontrolled |
 | Rigid system volume $V_{fixed}$ | **unmeasured** | Total of modules + tubing + manifolds |
 
-Transport envelope and key system parameters. The rigid system volume $V_{fixed}$ is the single most important unknown in the analysis and is the subject of @sec-critical-unknown.
+Transport envelope and key system parameters. The rigid system volume $V_{fixed}$ is the single most important unknown in the analysis and is the subject of @sec-critical-unknowns.
 :::
 
 The 30 to 60 day shipping duration is significant. Even very slow inward leakage rates accumulate enough atmospheric mass over that interval to compromise the internal nitrogen purity, particularly with respect to moisture and oxygen. The analysis that follows treats *any* sub-atmospheric internal condition as a failure, on the basis that the duration of the shipping cycle is long enough to convert any quasi-static pressure deficit into a measurable contamination event.
@@ -125,7 +125,11 @@ Once the bag reaches maximum volume, the system has no remaining geometric compl
 During descent and cooling, ambient pressure rises and gas temperature falls. The bag collapses. If the bag reaches zero volume before the remaining nitrogen inventory can support ambient pressure in the rigid connected volume, internal pressure falls below ambient. Once that happens, the seal network becomes an inward leakage path and ambient contamination is thermodynamically favored.
 
 ::: {#fig-ideal-vent-cycle layout-ncol="2"}
-![Quasi-static pressure histories for representative rigid volumes under ideal outward venting. The 60 L case vents early and reaches negative pressure differential on the return leg.](generated/quasistatic_pressure_examples_ideal_vent.png){fig-alt="Pressure versus time for 12 L, 30 L, and 60 L rigid connected volumes under ideal outward venting. The 12 L case tracks ambient throughout. The 30 L case reaches the vent threshold but remains nonnegative on return. The 60 L case drops below ambient after descent begins."} ![Quasi-static bag-volume histories for the same ideal-vent cases. The 60 L case reaches full bag volume early, then later collapses to zero before return to sea-level conditions.](generated/quasistatic_bag_examples_ideal_vent.png){fig-alt="Bag volume versus time for 12 L, 30 L, and 60 L rigid connected volumes under ideal outward venting. The 12 L case stays within the bag range. The 30 L case reaches maximum bag volume and later contracts. The 60 L case reaches maximum bag volume early and collapses to zero during the return leg."} Representative ideal-vent cases from the MATLAB quasi-static model. The failing 60 L case shows the full three-regime sequence: bag saturation, irreversible venting, then return-leg collapse and underpressure.
+![](generated/quasistatic_pressure_examples_ideal_vent.png){fig-alt="Pressure versus time for 12 L, 30 L, and 60 L rigid connected volumes under ideal outward venting. The 12 L case tracks ambient throughout. The 30 L case reaches the vent threshold but remains nonnegative on return. The 60 L case drops below ambient after descent begins."}
+
+![](generated/quasistatic_bag_examples_ideal_vent.png){fig-alt="Bag volume versus time for 12 L, 30 L, and 60 L rigid connected volumes under ideal outward venting. The 12 L case stays within the bag range. The 30 L case reaches maximum bag volume and later contracts. The 60 L case reaches maximum bag volume early and collapses to zero during the return leg."}
+
+Representative ideal-vent cases from the MATLAB quasi-static model. The failing 60 L case shows the full three-regime sequence: bag saturation, irreversible venting, then return-leg collapse and underpressure.
 :::
 
 # Governing Model {#sec-model}
@@ -210,8 +214,7 @@ which gives
 
 $$V_{fixed}
 \le
-\frac{V_{bag,max} - \alpha V_{bag,init}}{\alpha - 1}.$$
- {#eq-no-vent}
+\frac{V_{bag,max} - \alpha V_{bag,init}}{\alpha - 1}.$$ {#eq-no-vent}
 
 Using the present transport envelope,
 
@@ -262,8 +265,7 @@ Then the acceptable rigid volume must satisfy
 
 $$V_{fixed}
 \le
-\frac{V_{bag,max}}{\gamma(\Delta P_{req}) - 1}.$$
- {#eq-return-threshold}
+\frac{V_{bag,max}}{\gamma(\Delta P_{req}) - 1}.$$ {#eq-return-threshold}
 
 For the nonnegative-return case under ideal venting,
 
@@ -318,7 +320,7 @@ First, the 30 L ideal-vent case already vents 5.06 g of nitrogen even though it 
 
 Second, the 60 L ideal-vent case produces the exact sequence implicated by the field failures. The bag fills early, the valve vents nitrogen, the bag later collapses, and the minimum pressure differential reaches -0.0371 bar. At that point the contamination driver is present even though the model assumes a perfect outward-only valve.
 
-# Upper Bound on Overpressure: The Bag Vent Is Unnecessary {#sec-upper-bound}
+# Upper Bound on Overpressure {#sec-upper-bound}
 
 The preceding analysis establishes that return-leg underpressure results from irreversible mass loss through the bag vent. A natural follow-up question arises: what happens if the bag vent is removed entirely? The system already carries overpressure protection -- the 0.5 bar gauge circuit relief valve required by PED 2014/68/EU. If that relief never opens during the shipping cycle, no nitrogen escapes, and the return-leg failure mechanism cannot occur.
 
@@ -336,9 +338,9 @@ $$\Delta P = P_{seal} \cdot \frac{T}{T_{seal}} - P_{amb}.$$  {#eq-dp-bound}
 
 This expression is maximized when $T$ is highest and $P_{amb}$ is lowest -- the cruise-altitude condition.
 
-### Cruise altitude ($P_{amb} \approx 75.26\;\text{kPa}$, 8000 ft) {#sec-cruise-bound}
+### Cruise altitude at 8000 ft {#sec-cruise-bound}
 
-@tbl-cruise-overpressure shows the internal overpressure at cruise altitude for a range of cargo temperatures, assuming seal-up at 20 °C and 101.325 kPa.
+At cruise altitude, $P_{amb} \approx 75.26\;\text{kPa}$ for the 8000 ft cabin condition used here. @tbl-cruise-overpressure shows the internal overpressure at cruise altitude for a range of cargo temperatures, assuming seal-up at 20 °C and 101.325 kPa.
 
 ::: {#tbl-cruise-overpressure tbl-colwidths="[20,25,25,30]"}
 | $T_{cargo}$ (°C) | $P_{int}$ (kPa) | $\Delta P$ (kPa) | $\Delta P$ (bar g) |
@@ -734,7 +736,7 @@ plt.show()
 
 ```{python}
 #| label: fig-dp-surface
-#| fig-cap: "Worst return-leg pressure deficit for the ideal-vent case (P_crack = 0). Left: filled contour map with the ΔP = 0 boundary (black line) separating the safe region (green, ΔP ≥ 0) from the failure region (red, ΔP < 0). Right: 3D surface showing the steep transition at the failure boundary."
+#| fig-cap: "Worst return-leg pressure deficit for the ideal-vent case (P_crack = 0). Left: filled contour map with the ΔP = 0 boundary (black line) separating the safe region (green, ΔP >= 0) from the failure region (red, ΔP < 0). Right: 3D surface showing the steep transition at the failure boundary."
 #| fig-alt: "Two-panel figure. Left panel is a filled contour heatmap of worst delta-P in Pa on the V_fixed (20 to 120 L) by T_cargo (5 to 30 C) plane. Green shading indicates safe conditions and red shading indicates underpressure. A black contour marks the zero crossing near 50 to 65 liters depending on cargo temperature. Right panel is a 3D surface plot of the same data, showing a plateau at zero for small volumes that drops steeply into negative values beyond the failure boundary."
 #| echo: false
 
@@ -814,7 +816,7 @@ Maximum rigid volume for nonnegative return-leg pressure at $T_{cargo} = 30\;\te
 
 ## Conditions for Validity {#sec-validity-conditions}
 
-The conclusion that the bag vent is unnecessary rests on six conditions:
+The analytical conclusion that the bag vent is not required for outbound overpressure protection (and that a vent-removed configuration stays within relief margin) rests on six conditions:
 
 1. The compliance bag is airtight (no diffusion leakage through the foil laminate over the shipping duration).
 2. The bag vent is physically removed or permanently sealed. A vent that is merely closed but can be opened inadvertently does not satisfy this condition.
@@ -836,27 +838,99 @@ The evidence in this report does not support bag leakage as the primary root cau
 
 The simplest explanation that matches the field history and the first-principles model is therefore the one adopted here: **return-leg underpressure following irreversible nitrogen mass loss**.
 
-# Critical Unknown and Required Next Action {#sec-critical-unknown}
+# Assumptions That Matter For Review {#sec-review-assumptions}
 
-The single most important missing parameter is the rigid connected volume $V_{fixed}$. That quantity determines where the hardware lies on the screening map in @tbl-thresholds and @fig-min-dp-sweep.
+The findings and overpressure disposition below are conditioned on explicit validity statements. Reviewers should treat conclusions as **findings under these assumptions**, not as unconditional universal claims.
 
-::: callout-important
-## Measure $V_{fixed}$ before evaluating design changes
+- Single-flight shipping cycle (outbound and return) for the overpressure bound and parametric sweep in @sec-upper-bound.
+- Seal-up near 20 °C and 1 atm (see @sec-validity-conditions for sensitivity).
+- Maximum cabin altitude at or below 8000 ft (FAA 14 CFR 25.841) unless superseded by verified carrier cargo-hold data.
+- For a vent-removed configuration: bag and port integrity over the full shipping duration (no pinhole or seal defect that reintroduces slow loss).
+- Circuit relief setpoint at or above 0.5 bar gauge as installed (calibration evidence required for formal closure).
 
-- If $V_{fixed} \le 15.28$ L, the present concept avoids venting under the ideal-vent screening case.
-- If $15.28 < V_{fixed} \le 52.55$ L, the present concept can vent and still remain nonnegative on return, but with limited or zero margin.
-- If $V_{fixed} > 52.55$ L, ideal outward venting still produces sub-atmospheric return conditions.
-- If the bag valve behaves more like a `2 psig` outward vent, the same mechanism remains present but shifts to a larger threshold volume of 109.19 L.
+# Findings {#sec-findings}
+
+::: {#fnd-sh-001}
+**FND-SH-001:** The governing contamination failure is return-leg underpressure after irreversible nitrogen mass loss during outbound venting when the compliance bag saturates and the outward path vents.
+
+*Disposition: supported by current report (@sec-actual-mechanism, @sec-field-history).*
 :::
 
-This report intentionally stops at the investigation result. It does not propose a design solution. The correct next engineering step is to measure $V_{fixed}$ and compare that measurement against the screening limits above. Only then can a design-response study proceed on firm ground.
+::: {#fnd-sh-002}
+**FND-SH-002:** The failure does not require bag leakage or valve backflow. A perfect outward-only vent still fails above the threshold in Eq. @eq-return-threshold.
+
+*Disposition: supported by current report (@sec-not-bag-leakage, @sec-model).*
+:::
+
+::: {#fnd-sh-003}
+**FND-SH-003:** The rigid connected volume $V_{fixed}$ remains the decisive missing parameter for fully dispositioning the **as-built vented** concept against @eq-no-vent and @eq-return-threshold.
+
+*Disposition: open until measured (@sec-critical-unknowns, @sec-closure).*
+:::
+
+::: {#fnd-sh-004}
+**FND-SH-004:** Under physically realizable cargo temperatures, the existing 0.5 bar circuit relief valve does not open during a single-flight shipping cycle at cruise altitude; @eq-t-relief gives an infeasible relief-opening temperature.
+
+*Disposition: supported by current report (@sec-upper-bound, @sec-coolprop-verify).*
+:::
+
+::: {#fnd-sh-005}
+**FND-SH-005:** If the bag vent is removed (or permanently sealed), the irreversible mass-loss pathway through that vent is eliminated; with bag integrity and relief margin per @sec-validity-conditions, the return-leg underpressure mechanism driven by that venting path no longer occurs under the modeled envelope. @fig-failure-boundary and @tbl-max-safe-volume support nonnegative return-leg pressure when cracking pressure is at or above the PED relief level.
+
+*Disposition: proposed design implication (@sec-decision-status).*
+:::
+
+# Critical Unknowns {#sec-critical-unknowns}
+
+The single most important unknown is the rigid connected nitrogen volume $V_{fixed}$. It determines where production hardware lies on the screening map in @tbl-thresholds and @fig-min-dp-sweep relative to the no-vent and return-margin limits.
+
+**Why it matters:** Until $V_{fixed}$ is known, the project cannot rigorously classify the present vented architecture as clearly inside, near, or beyond the ideal-vent thresholds in @tbl-thresholds.
+
+**What closes it:** A direct volume measurement (CAD roll-up, gas-fill/water displacement, or equivalent traceable method) recorded against the same manifold boundary used in this analysis.
+
+# Remaining Data To Close The Argument {#sec-closure}
+
+| Item | Owner | What it proves | Status |
+|:-----|:------|:---------------|:-------|
+| Measure $V_{fixed}$ | TBD | Places the as-built vented hardware on the screening map; enables interpretation against @eq-no-vent and @eq-return-threshold. | Not started |
+| Verify bag integrity if vent removal is pursued | TBD | Confirms that eliminating the vent path does not leave a slow leak through the bag or port that reintroduces inventory loss. | Not started |
+| Verify relief calibration $\ge$ 0.5 bar gauge | TBD | Confirms the validity condition used in the overpressure bound (@sec-validity-conditions). | Not started |
+| Characterize actual outward vent threshold (vs ideal vent) | TBD | If the hardware behaves closer to a finite cracking pressure (e.g. 2 psig), thresholds shift (@tbl-thresholds); disposition must use measured or specified behavior. | Not started |
+| Verify effective cargo-hold pressure / altitude | TBD | Confirms the 8000 ft cabin-altitude envelope used in screening and cruise-bound tables. | Not started |
+
+::: callout-important
+## How to interpret the measured rigid volume
+
+- If $V_{fixed} \le 15.28$ L, the present concept avoids venting under the ideal-vent screening case.
+- If $15.28 < V_{fixed} \le 52.55$ L, the present concept can vent and still remain nonnegative on return under ideal venting, but with limited or zero margin.
+- If $V_{fixed} > 52.55$ L, ideal outward venting still produces sub-atmospheric return conditions.
+- If the bag valve behaves more like a `2 psig` outward vent, the same mechanism remains present but shifts to a larger threshold volume of 109.19 L (@tbl-thresholds).
+:::
+
+# Decision Status {#sec-decision-status}
+
+**Decision status: proposed design recommendation.**
+
+This report is not limited to mechanism description alone. Based on **FND-SH-004** and **FND-SH-005**, and on the parametric evidence in @fig-failure-boundary and @tbl-max-safe-volume, the recommended path forward for contamination control is **removal or permanent sealing of the bag vent**, with outbound structural margin carried by the existing 0.5 bar circuit relief, **subject to** closure of the items in @sec-closure (especially $V_{fixed}$, bag integrity if the vent is removed, and relief calibration).
+
+Measurement of $V_{fixed}$ remains mandatory to disposition the **legacy vented** configuration and to confirm that screening assumptions match the built article; it does not negate the overpressure-based argument for vent removal under @sec-review-assumptions.
+
+# Evidence Sources {#sec-evidence-sources}
+
+| Evidence type | Where used in this report |
+|:--------------|:--------------------------|
+| Confirmed field contamination history | @sec-field-history |
+| Closed-form screening thresholds | @sec-thresholds, @tbl-thresholds |
+| MATLAB quasi-static cycle model and case tables | @sec-results, @tbl-cases, figures in @sec-actual-mechanism |
+| Analytical overpressure bound (ideal gas) | @sec-upper-bound, @eq-dp-bound |
+| CoolProp Helmholtz equation-of-state check | @sec-coolprop-verify |
+| Parametric sweep / contour simulation (Python, CoolProp) | @sec-parametric-surface, @fig-failure-boundary, @fig-dp-surface, @tbl-max-safe-volume |
 
 # Conclusions {#sec-conclusions}
 
-1.  The present 0.5 bar safety relief valve addresses outbound structural overpressure, but it does not address the contamination failure mode.
-2.  The governing failure is return-leg underpressure after the system irreversibly loses nitrogen mass during outbound venting.
-3.  The failure does not require bag leakage or valve backflow. A perfect outward-only vent still fails above the threshold in Eq. @eq-return-threshold.
-4.  For the current 22 L bag and the stated shipping envelope, the ideal-vent screening thresholds are 15.28 L for avoiding venting and 52.55 L for avoiding return-leg underpressure.
-5.  The highest-priority next action is to measure the rigid connected nitrogen volume $V_{fixed}$ of the production hardware.
-6.  An analytical upper bound on overpressure (@eq-dp-bound) demonstrates that the existing 0.5 bar circuit relief valve cannot open during any single-flight shipping cycle under physically realizable temperatures. The cargo hold temperature would need to reach 89 °C -- not achievable in air freight -- for the relief to crack at cruise altitude.
-7.  Removing the bag vent eliminates the mass-loss pathway that drives the return-leg underpressure failure. The compliance bag continues to serve as a volume buffer; the circuit relief provides overpressure protection. The parametric analysis in @fig-failure-boundary confirms this conclusion across the full range of $V_{fixed}$ (20--120 L), $T_{cargo}$ (5--30 °C), and $T_{tarmac}$ (30--50 °C).
+1. The present 0.5 bar safety relief addresses outbound structural overpressure but does not, by itself, prevent return-leg contamination failure (**FND-SH-001**).
+2. The governing failure mode is return-leg underpressure after irreversible nitrogen mass loss during outbound venting; leakage through the bag path is not required to explain it (**FND-SH-001**, **FND-SH-002**).
+3. For the 22 L bag and stated envelope, ideal-vent screening limits are 15.28 L (no outbound venting) and 52.55 L (nonnegative return); **FND-SH-003** applies until $V_{fixed}$ is measured.
+4. The existing 0.5 bar circuit relief does not open under physically realizable single-flight cargo temperatures; the relief-opening temperature from @eq-t-relief is infeasible in air freight (**FND-SH-004**).
+5. Under @sec-review-assumptions and @sec-validity-conditions, removing the bag vent eliminates the vent-path mass-loss driver analyzed here; parametric results support nonnegative return-leg pressure at PED-level cracking pressure (**FND-SH-005**).
+6. **Bag-vent removal is a proposed design recommendation**, not an executed hardware change, as stated in @sec-decision-status; formal closure requires @sec-closure.
