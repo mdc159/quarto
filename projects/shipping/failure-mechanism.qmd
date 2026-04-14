@@ -25,6 +25,22 @@ keywords:
      Referenced downstream via: @fnd-sh-nnn
      ============================================================ -->
 
+# Summary {#sec-summary}
+
+This report investigates the shipping failure mode of the nitrogen-purged optical assembly. The investigation is motivated by confirmed field contamination events (moisture ingress, biological contamination) following air transport. Two lines of investigation are pursued: a helium leak check of the breather bag assembly, and a quasi-static thermodynamic model of the round-trip transit cycle.
+
+The current status of each investigation and the overall roadmap are summarized below.
+
+::: {#tbl-roadmap tbl-colwidths="[12,30,18,40]"}
+| ID | Investigation | Status | Key result |
+|:---|:-------------|:-------|:-----------|
+| INV-1 | Helium leak check of bag assembly | Complete | No permeation through bag material; leakage found at both ports (check valve, fill port) |
+| INV-2 | Quasi-static transit model (2 PSIG vent) | In progress | Bag saturation threshold ~14 L; venting onset ~68 L; return underpressure threshold ~102 L. The 60 L nominal case does not vent under the as-built profile. |
+| INV-3 | Measure $V_{fixed}$ | Not started | Required to locate the production hardware on the screening map |
+
+Investigation roadmap. Findings from each investigation are cataloged in @sec-findings.
+:::
+
 # System Description {#sec-system}
 
 The shipped article is a manifolded optical assembly composed of multiple sealed aluminum modules connected to a common nitrogen space through PFA interconnect tubing and intake/exhaust manifolds. The total internal nitrogen space is the sum of the module interiors, the interconnect tubing, the manifold volumes, and the shipping-time compliance bag. All of these volumes communicate freely through the manifold network and behave thermodynamically as a single connected gas volume.
@@ -33,7 +49,7 @@ In operation, a continuous nitrogen purge maintains positive gauge pressure thro
 
 During shipping, the continuous purge is unavailable. The assembly is sealed at atmospheric pressure with a fixed initial nitrogen mass, and two passive elements manage pressure excursions across the transport cycle:
 
-1.  **Foil compliance bag** -- a CALDRY 1500 multilayer foil reservoir that expands and contracts between approximately zero and 22 L. The foil is geometrically compliant but not elastically compliant: it unfolds and refolds between hard geometric limits with negligible restoring force across its usable range.
+1.  **Foil compliance bag** -- a CALDRY 1500 multilayer foil reservoir that expands and contracts between approximately zero and 22 L. The foil is geometrically compliant but not elastically compliant: it unfolds and refolds between hard geometric limits with negligible restoring force across its usable range. The bag has two ports: a fill port used during initial nitrogen charge, and a check valve port holding the outward-only vent.
 
 2.  **Outward-only check/vent valve** -- permits nitrogen to escape if internal pressure exceeds ambient by the valve's 2 PSIG cracking threshold, but does not admit ambient flow inward.
 
@@ -75,36 +91,60 @@ The contamination is not present at seal-up, and no operational use occurs betwe
 
 These field failures predate the introduction of the present breather bag and check valve. The original configuration seals the manifolded assembly rigidly at atmospheric pressure with no compliance volume. During air transport the rigidly sealed system experiences the coupled pressure-temperature excursion analyzed in this document, but with no compliance reservoir and no outward relief path. Internal pressure rises and falls with the round-trip ambient and temperature cycle. On the return leg internal pressure falls below ambient, and the positive-pressure-energized seals lose seating force. Atmospheric ingress through the distributed seal network introduces moisture, oxygen, and particulates to the high-purity nitrogen space.
 
-The breather bag and check valve concept is introduced as a passive mitigation. The intent is to provide a flexible reservoir that expands and contracts with the gas, and an outward-only valve that prevents inward flow. The mitigation addresses the original failure by providing a compliance reservoir, but it does not eliminate the underlying thermodynamic problem. As the following sections show, the mitigation is defeated by the same coupled pressure-temperature cycle if the bag is undersized relative to the rigid connected volume.
+The breather bag and check valve concept is introduced as a passive mitigation. The intent is to provide a flexible reservoir that expands and contracts with the gas, and an outward-only valve that prevents inward flow. The mitigation addresses the original failure by providing a compliance reservoir, but it does not eliminate the underlying thermodynamic problem. As the following sections show, the mitigation can be defeated by the same coupled pressure-temperature cycle if the bag is undersized relative to the rigid connected volume.
 
 The field history establishes two facts that the rest of the document relies on. First, the seal network is **observably permeable** to atmospheric ingress under sub-atmospheric internal conditions; this is not a hypothetical concern. Second, the failure manifests over a shipping duration measured in weeks, consistent with quasi-static thermodynamics rather than transient dynamic overpressure.
 
-# Failure Mechanism {#sec-mechanism}
+# Investigation 1: Helium Leak Check {#sec-inv-leak-check}
+
+A helium leak check is performed on a new, unused breather bag assembly to characterize the leak integrity of the bag and its port connections independently of the transit thermodynamic model.
+
+## Method
+
+The bag is filled with helium and inspected with a helium sniffer detector. The inspection covers the full surface of the heat-sealed bag material, the fill port connection, and the check valve (2 PSIG outward-only vent) port connection.
+
+## Results
+
+- **Bag material and heat seals:** No detectable helium leakage or permeation through the bag foil or along any heat-sealed seam.
+- **Check valve port:** Helium leakage detected. The port connection for the 2 PSIG outward-only check valve does not seal sufficiently.
+- **Fill port:** Helium leakage detected. The fill port connection does not seal sufficiently.
+
+Both port areas show evidence of inadequate sealing. The bag material itself is not a leakage path.
+
+::: callout-note
+## Implication for the transit model
+
+The transit model in @sec-inv-transit assumes a perfect outward-only valve with no inward leakage. The helium leak check demonstrates that the real valve port leaks in both directions. This means the actual system is *worse* than the idealized model predicts: nitrogen can escape not only through intentional venting but also through port leakage, and ambient air can enter through the same paths during the return-leg low-pressure phase.
+:::
+
+# Investigation 2: Quasi-Static Transit Model {#sec-inv-transit}
+
+## Failure Mechanism {#sec-mechanism}
 
 The governing mechanism has three regimes. @fig-three-regimes shows the logic schematically, and @fig-vent-cycle shows the same behavior in the quasi-static model.
 
-## Regime 1: Bag Absorbs Expansion
+### Regime 1: Bag Absorbs Expansion
 
 During ascent and heating, the nitrogen expands. As long as the bag has remaining headroom, the bag unfolds and internal pressure tracks ambient pressure. No harmful differential pressure develops.
 
-## Regime 2: Bag Saturates and the Valve Vents Nitrogen
+### Regime 2: Bag Saturates and the Valve Vents Nitrogen
 
 Once the bag reaches maximum volume, the system has no remaining geometric compliance. Continued expansion appears as pressure rise. When internal gauge pressure exceeds the 2 PSIG cracking threshold, the outward-only valve opens and nitrogen leaves the system. This is the irreversible step: the retained mole inventory is permanently reduced.
 
-## Regime 3: Return Leg, Bag Collapse, and Sub-Atmospheric Pressure
+### Regime 3: Return Leg, Bag Collapse, and Sub-Atmospheric Pressure
 
 During descent and cooling, ambient pressure rises and gas temperature falls. The bag collapses. If the bag reaches zero volume before the remaining nitrogen inventory can support ambient pressure in the rigid connected volume, internal pressure falls below ambient. The seal network becomes an inward leakage path and atmospheric contamination is thermodynamically favored.
 
 ::: {#fig-vent-cycle layout-ncol="2"}
-![Quasi-static pressure histories for representative rigid volumes under the 2 PSIG vent. The 60 L case vents nitrogen and reaches negative pressure differential on the return leg.](generated/quasistatic_pressure_examples_vent_2psig.png){fig-alt="Pressure versus time for representative rigid connected volumes under 2 PSIG outward venting. Small volumes track ambient throughout. Large volumes vent nitrogen and drop below ambient on the return leg."} ![Quasi-static bag-volume histories for the same cases. The 60 L case reaches full bag volume early, then collapses to zero before return to sea-level conditions.](generated/quasistatic_bag_examples_vent_2psig.png){fig-alt="Bag volume versus time for representative rigid connected volumes under 2 PSIG outward venting. Small volumes stay within the bag range. Large volumes reach maximum bag volume and later collapse to zero."}
-Representative 2 PSIG vent cases from the quasi-static model. The failing case shows the full three-regime sequence: bag saturation, irreversible venting, then return-leg collapse and underpressure.
+![Quasi-static pressure histories for representative rigid volumes under the 2 PSIG vent. Large volumes vent nitrogen and reach negative pressure differential on the return leg.](generated/PIR-SH-001_quasistatic_pressure_examples_vent_2psig.png){fig-alt="Pressure versus time for representative rigid connected volumes under 2 PSIG outward venting. Small volumes track ambient throughout. Large volumes vent nitrogen and drop below ambient on the return leg."} ![Quasi-static bag-volume histories for the same cases. Large volumes reach full bag volume early, then collapse to zero before return to sea-level conditions.](generated/PIR-SH-001_quasistatic_bag_examples_vent_2psig.png){fig-alt="Bag volume versus time for representative rigid connected volumes under 2 PSIG outward venting. Small volumes stay within the bag range. Large volumes reach maximum bag volume and later collapse to zero."}
+Representative 2 PSIG vent cases from the quasi-static model.
 :::
 
-# Governing Model {#sec-model}
+## Governing Model {#sec-model}
 
 The analysis uses the minimum model needed to distinguish safe compliance behavior from irreversible mass loss and return-leg underpressure.
 
-## Assumptions
+### Assumptions
 
 1. The working fluid is pure nitrogen (ideal gas, $\gamma = 7/5$).
 2. The nitrogen is well mixed throughout the connected volume.
@@ -112,11 +152,11 @@ The analysis uses the minimum model needed to distinguish safe compliance behavi
 4. The bag volume is clamped to $0 \le V_{bag}(t) \le V_{bag,max}$.
 5. The bag valve opens at exactly 2 PSIG gauge, vents until equilibrium, and reseals perfectly. No inward flow.
 6. The shipping cycle is slow enough for a quasi-static treatment.
-7. Cargo hold temperature at cruise is a nominal baseline of 20 °C (see @sec-envelope).
+7. Seal-up occurs at 20 °C and 101.325 kPa (sea level, standard conditions). The cargo hold temperature at cruise altitude is assumed equal to the seal-up temperature (20 °C) as a nominal baseline. These are coincidentally the same value; in the parametric sweeps they vary independently.
 
 This model is intentionally simple. It omits bag leakage, valve hysteresis, and transient fluid dynamics. That simplicity strengthens the root-cause argument: if the mechanism appears under idealized assumptions, then bag leakage is not required to explain the observed failures.
 
-## Governing Equations
+### Governing Equations
 
 The retained nitrogen inventory and the occupied gas volume satisfy
 
@@ -154,17 +194,17 @@ Ingress risk exists whenever
 
 $$\Delta P(t) = P_{int}(t) - P_{amb}(t) < 0.$$ {#eq-delta-p}
 
-# Closed-Form Screening Thresholds {#sec-thresholds}
+## Closed-Form Screening Thresholds {#sec-thresholds}
 
-The piecewise model yields two closed-form screening expressions that determine whether the concept can work.
+The piecewise model yields closed-form screening expressions that bound the design space. Two distinct events must be distinguished: **bag saturation** (the bag reaches maximum volume) and **venting onset** (internal gauge pressure exceeds the cracking threshold after the bag is full). With a non-zero cracking pressure, the system can sustain overpressure after bag saturation without venting.
 
-## Threshold 1: Largest Rigid Volume That Avoids Any Venting
+### Bag Saturation Threshold
 
-At seal-up,
+At seal-up, the initial nitrogen inventory is
 
 $$n_0 = \frac{P_{seal}\left(V_{fixed} + V_{bag,init}\right)}{R\,T_{seal}}.$$
 
-At the outbound low-pressure, high-temperature peak, define
+At the outbound low-pressure, high-temperature peak, define the volume expansion ratio
 
 $$\alpha =
 \left(\frac{P_{seal}}{P_{low}}\right)
@@ -180,36 +220,46 @@ which gives
 
 $$V_{fixed}
 \le
-\frac{V_{bag,max} - \alpha V_{bag,init}}{\alpha - 1}.$$ {#eq-no-vent}
+\frac{V_{bag,max} - \alpha\, V_{bag,init}}{\alpha - 1}.$$ {#eq-bag-sat}
 
-Using the transport envelope from @tbl-transport-envelope ($P_{low} = 75.26\;\text{kPa}$, $T_{hot} = 313.15\;\text{K}$):
+Using the simultaneous worst-case from @tbl-transport-envelope ($P_{low} = 75.26\;\text{kPa}$, $T_{hot} = 313.15\;\text{K}$):
 
 $$\alpha
 =
 \left(\frac{101.325}{75.26}\right)
 \left(\frac{313.15}{293.15}\right)
-= 1.438$$
-
-$$V_{fixed}
+= 1.438,
+\qquad
+V_{fixed}
 \le
 \frac{22 - (1.438)(11)}{1.438 - 1}
 = 14.1\ \mathrm{L}.$$
 
-Any rigid connected volume above **14.1 L** must vent on the outbound leg.
+Any rigid connected volume above **14.1 L** saturates the bag under the simultaneous worst-case assumption.
 
-## Threshold 2: Largest Rigid Volume That Still Returns Nonnegative After Venting
+::: callout-note
+## Bag saturation is not venting
 
-Once the bag is full and the system has vented to the 2 PSIG setpoint,
+The 14.1 L threshold is the volume at which the bag reaches maximum capacity. With a 2 PSIG cracking pressure, the system can sustain up to 13.79 kPa gauge overpressure after the bag is full without opening the valve. In the realistic 9-segment flight profile, the lowest ambient pressure (cruise) and highest temperature (tarmac) do not coincide, so the actual venting onset occurs at a substantially larger volume. The notebook simulation places the venting onset at approximately **68 L** for the nominal profile.
+:::
 
-$$P_{peak} = P_{low} + P_{vent,g} = 75.26 + 13.79 = 89.05\;\text{kPa}.$$
+### Venting Onset Threshold (Profile-Dependent)
 
-The retained nitrogen inventory becomes
+With the 2 PSIG cracking pressure, the system vents only when the trial pressure after bag saturation exceeds $P_{amb} + 13.79\;\text{kPa}$. Because the worst-case temperature and worst-case ambient pressure occur at different points in the flight profile, the venting onset threshold depends on the specific temperature-altitude profile and cannot be expressed as a single closed-form number using simultaneous extremes.
+
+The quasi-static notebook simulation (@sec-results) evaluates the full 9-segment profile and places the venting onset at approximately **68 L** for the nominal baseline (20 °C cargo, 40 °C tarmac, 8,000 ft cruise). Below 68 L, no nitrogen is lost and the system returns to seal-up conditions identically.
+
+### Return-Leg Underpressure Threshold {#sec-return-threshold}
+
+Once venting has occurred, the retained nitrogen inventory after venting at the 2 PSIG setpoint is
 
 $$n_{retained}
 =
-\frac{P_{peak}\left(V_{fixed} + V_{bag,max}\right)}{R\,T_{peak}}.$$
+\frac{P_{peak}\left(V_{fixed} + V_{bag,max}\right)}{R\,T_{peak}},$$
 
-After return, once the bag has collapsed,
+where $P_{peak} = P_{low} + P_{vent,g} = 75.26 + 13.79 = 89.05\;\text{kPa}$ and $T_{peak}$ is the gas temperature at the venting event.
+
+After return, once the bag has collapsed, the internal pressure is
 
 $$P_{return,int}
 =
@@ -222,7 +272,9 @@ To require a minimum return pressure margin $\Delta P_{req}$, define
 $$\gamma(\Delta P_{req})
 =
 \frac{\left(P_{return,amb} + \Delta P_{req}\right)T_{peak}}
-{P_{peak}\,T_{return}}.$$ {#eq-gamma}
+{P_{peak}\,T_{return}},$$ {#eq-gamma}
+
+where $P_{return,amb} = 101.325\;\text{kPa}$ (return to sea level) and $T_{return} = T_{seal} = 293.15\;\text{K}$.
 
 Then the acceptable rigid volume must satisfy
 
@@ -230,65 +282,130 @@ $$V_{fixed}
 \le
 \frac{V_{bag,max}}{\gamma(\Delta P_{req}) - 1}.$$ {#eq-return-threshold}
 
-For the nonnegative-return case ($\Delta P_{req} = 0$) under the 2 PSIG vent:
+For the nonnegative-return case ($\Delta P_{req} = 0$) under the 2 PSIG vent, with $T_{peak} = T_{hot} = 313.15\;\text{K}$:
 
 $$\gamma(0)
 =
 \frac{(101.325)(313.15)}{(89.05)(293.15)}
-= 1.215$$
-
-$$V_{fixed}
+= 1.215,
+\qquad
+V_{fixed}
 \le
 \frac{22}{1.215 - 1}
 = 102.3\ \mathrm{L}.$$
 
-Under the 2 PSIG vent, any rigid connected volume above approximately **102 L** goes sub-atmospheric on the return leg.
+For a small positive margin ($\Delta P_{req} = 0.01\;\text{bar} = 1.0\;\text{kPa}$):
 
-::: {#tbl-thresholds tbl-colwidths="[30,22,24,24]"}
-| Vent assumption | No-vent threshold | Return $\ge 0$ bar | Return $\ge +0.01$ bar |
-|:----------------|------------------:|--------------------:|-----------------------:|
-| 2 PSIG (as-built) | 14.1 L | ~102 L | ~97 L |
+$$\gamma(0.01)
+=
+\frac{(102.325)(313.15)}{(89.05)(293.15)}
+= 1.227,
+\qquad
+V_{fixed}
+\le
+\frac{22}{1.227 - 1}
+= 96.9\ \mathrm{L}.$$
 
-Threshold volumes from the closed-form screening expressions. All values are maximum allowable rigid connected volumes for the stated return-pressure criterion, using ICAO 75.26 kPa at 8,000 ft.
+::: {#tbl-thresholds tbl-colwidths="[30,18,18,18,16]"}
+| Threshold | Value | Basis | Condition | Note |
+|:----------|------:|:------|:----------|:-----|
+| Bag saturation | 14.1 L | Closed-form (@eq-bag-sat) | Simultaneous worst-case | Conservative bound |
+| Venting onset | ~68 L | Notebook simulation | Nominal 9-segment profile | Profile-dependent |
+| Return $\ge 0$ bar | ~102 L | Closed-form (@eq-return-threshold) | Simultaneous worst-case | Conservative bound |
+| Return $\ge +0.01$ bar | ~97 L | Closed-form (@eq-return-threshold) | Simultaneous worst-case | With 0.01 bar margin |
+
+Screening thresholds for the 2 PSIG vent (as-built). ICAO 75.26 kPa at 8,000 ft.
 :::
 
-# Quasi-Static Round-Trip Results {#sec-results}
+## Quasi-Static Round-Trip Results {#sec-results}
 
-@fig-min-dp-sweep shows the minimum pressure differential across the shipping cycle as a function of rigid connected volume. The differential remains at zero while the bag absorbs the outbound excursion without venting. Once venting becomes unavoidable, the pressure margin erodes with increasing $V_{fixed}$.
+@fig-min-dp-sweep shows the minimum pressure differential across the shipping cycle as a function of rigid connected volume. The differential remains at zero while the bag absorbs the outbound excursion without venting. Once venting becomes unavoidable (above ~68 L for the nominal profile), the pressure margin erodes with increasing $V_{fixed}$.
 
-![Minimum internal-minus-ambient pressure versus rigid connected volume for the 2 PSIG vent assumption. The curve crosses below zero near 102 L.](generated/quasistatic_min_dp_sweep.png){#fig-min-dp-sweep fig-alt="Plot of minimum internal minus ambient pressure versus rigid connected volume. The curve stays at zero for small volumes and then declines below zero near 102 liters for the 2 PSIG vent case."}
+![Minimum internal-minus-ambient pressure versus rigid connected volume for the 2 PSIG vent assumption.](generated/PIR-SH-001_quasistatic_min_dp_sweep.png){#fig-min-dp-sweep fig-alt="Plot of minimum internal minus ambient pressure versus rigid connected volume. The curve stays at zero for small volumes and then declines below zero for large volumes under the 2 PSIG vent case."}
+
+::: callout-note
+## Nominal 60 L case does not vent
+
+At $V_{fixed} = 60\;\text{L}$ with the 2 PSIG valve and the nominal flight profile, the bag fills to capacity during climb (t = 4.42 hr) but the peak overpressure reaches only 12.5 kPa — below the 13.79 kPa cracking threshold. No nitrogen is lost and the system returns to seal-up conditions identically. The system is safe at 60 L under the as-built 2 PSIG valve *if the valve and ports do not leak* (see @sec-inv-leak-check).
+:::
+
+## Multi-Cycle Accumulation {#sec-multi-cycle}
+
+The model evaluates a single round-trip. If the system vents on any leg, the deficit is permanent: the return leg cannot restore lost nitrogen. Repeated shipping cycles ratchet the retained inventory downward. A system that survives one cycle with marginal return pressure may fail after two or three cycles as the cumulative mass loss exceeds the remaining margin.
 
 # Findings {#sec-findings}
 
+## From INV-1: Helium Leak Check
+
 ::: {#fnd-sh-001}
-**FND-SH-001:** The system loses nitrogen mass irreversibly through the 2 PSIG outward vent whenever the rigid connected volume $V_{fixed}$ exceeds 14.1 L. The bag saturates, the valve opens, and the retained mole inventory is permanently reduced.
+**FND-SH-001:** Helium leak testing of a new bag assembly detects no leakage or permeation through the bag foil material or any heat-sealed seam. The bag material itself is not a leakage path.
 *Disposition: TBD*
 :::
 
 ::: {#fnd-sh-002}
-**FND-SH-002:** On the return leg, if $V_{fixed}$ exceeds approximately 102 L, the remaining nitrogen is insufficient to maintain ambient pressure in the rigid volume after the bag collapses. Internal pressure falls below ambient and the seal network admits atmospheric contamination.
+**FND-SH-002:** Helium leakage is detected at the check valve (2 PSIG vent) port. The port connection does not seal sufficiently to prevent gas transfer in either direction.
 *Disposition: TBD*
 :::
 
 ::: {#fnd-sh-003}
-**FND-SH-003:** The failure mechanism does not require bag leakage or valve backflow. A perfect outward-only vent and a perfect zero-stiffness bag still produce return-leg underpressure once $V_{fixed}$ exceeds the threshold. The failure is a mass-inventory problem, not a component defect.
+**FND-SH-003:** Helium leakage is detected at the fill port. The port connection does not seal sufficiently.
 *Disposition: TBD*
 :::
 
+## From INV-2: Transit Model
+
 ::: {#fnd-sh-004}
-**FND-SH-004:** The rigid connected volume $V_{fixed}$ of the production hardware is unmeasured. Where $V_{fixed}$ falls relative to the screening thresholds in @tbl-thresholds determines whether the present concept can succeed.
+**FND-SH-004:** The bag saturates (reaches 22 L maximum volume) for any $V_{fixed}$ above 14.1 L under the simultaneous worst-case assumption. With the 2 PSIG cracking pressure, the system sustains up to 13.79 kPa gauge overpressure after saturation before the valve opens. Venting onset in the nominal flight profile occurs at approximately 68 L.
 *Disposition: TBD*
 :::
 
 ::: {#fnd-sh-005}
-**FND-SH-005:** Confirmed field failures (moisture ingress, biological contamination) predate the breather bag mitigation. The same underpressure-driven contamination appears in the original rigidly sealed concept, establishing that the seal network is observably permeable under sub-atmospheric conditions.
+**FND-SH-005:** On the return leg, if $V_{fixed}$ exceeds approximately 102 L and the system has vented, the remaining nitrogen is insufficient to maintain ambient pressure in the rigid volume after the bag collapses. Internal pressure falls below ambient and the seal network admits atmospheric contamination.
+*Disposition: TBD*
+:::
+
+::: {#fnd-sh-006}
+**FND-SH-006:** The failure mechanism does not require bag leakage or valve backflow. A perfect outward-only vent and a perfect zero-stiffness bag still produce return-leg underpressure once $V_{fixed}$ exceeds the venting-onset threshold. The failure is a mass-inventory problem, not a component defect.
+*Disposition: TBD*
+:::
+
+::: {#fnd-sh-007}
+**FND-SH-007:** The rigid connected volume $V_{fixed}$ of the production hardware is unmeasured. Where $V_{fixed}$ falls relative to the screening thresholds in @tbl-thresholds determines whether the present concept can succeed.
+*Disposition: TBD*
+:::
+
+::: {#fnd-sh-008}
+**FND-SH-008:** Confirmed field failures (moisture ingress, biological contamination) predate the breather bag mitigation. The same underpressure-driven contamination appears in the original rigidly sealed concept, establishing that the seal network is observably permeable under sub-atmospheric conditions.
+*Disposition: TBD*
+:::
+
+::: {#fnd-sh-009}
+**FND-SH-009:** Each outbound venting event permanently reduces the retained nitrogen inventory. Repeated shipping cycles ratchet the inventory downward. A system that survives one cycle with marginal return pressure may fail after cumulative mass loss over multiple cycles.
 *Disposition: TBD*
 :::
 
 # Conclusions {#sec-conclusions}
 
-The transit model demonstrates that the nitrogen-purged optical assembly, as currently configured with a 2 PSIG outward-only bag vent, is a one-way nitrogen ratchet. Each outbound leg that saturates the bag and opens the vent permanently reduces the retained nitrogen inventory. The return leg cannot restore the lost mass.
+The transit model and the helium leak check together establish that the shipping concept has two independent vulnerability paths:
 
-The 14.1 L no-vent threshold is low enough that venting during transit is likely for any realistic production assembly. The ~102 L return-threshold provides additional margin, but the fundamental mechanism -- irreversible mass loss through an outward-only valve -- is present in the design regardless of where $V_{fixed}$ falls.
+1. **Thermodynamic mass loss** -- If $V_{fixed}$ is large enough to cause venting through the 2 PSIG valve, the system loses nitrogen irreversibly on each outbound leg. The return leg cannot restore the lost mass. Under the nominal flight profile with the as-built 2 PSIG valve, venting onset occurs at approximately 68 L. Below that volume, the system completes the round trip without loss.
 
-The immediate next step is to measure $V_{fixed}$ and compare the measurement against the screening thresholds in @tbl-thresholds.
+2. **Port leakage** -- Independent of the thermodynamic mechanism, the check valve port and fill port leak. This provides a gas transfer path in both directions that the idealized transit model does not account for. Port leakage can introduce contamination even if the bag and valve function as intended.
+
+The immediate next step is to measure $V_{fixed}$ (INV-3) and compare the measurement against the screening thresholds in @tbl-thresholds. Depending on where $V_{fixed}$ falls, either the thermodynamic mechanism alone, the port leakage alone, or both may be responsible for the observed field failures.
+
+# Appendix A: Bag Assembly Reference {#sec-appendix-bag}
+
+<!-- Placeholder for bag material specifications, CALDRY 1500 datasheet
+     excerpts, port configuration details, and valve specifications.
+     To be populated with the reference table from source documents. -->
+
+::: callout-tip
+## Content to add
+
+- CALDRY 1500 foil material specification and layer structure
+- Bag geometry and port layout
+- Check valve specification (2 PSIG cracking pressure, manufacturer, part number)
+- Fill port specification
+- Helium leak test procedure details and detection limits
+:::
