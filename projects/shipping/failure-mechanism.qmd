@@ -396,16 +396,54 @@ The immediate next step is to measure $V_{fixed}$ (INV-3) and compare the measur
 
 # Appendix A: Bag Assembly Reference {#sec-appendix-bag}
 
-<!-- Placeholder for bag material specifications, CALDRY 1500 datasheet
-     excerpts, port configuration details, and valve specifications.
-     To be populated with the reference table from source documents. -->
+## Known Failure Modes
 
-::: callout-tip
-## Content to add
+@tbl-failure-modes catalogs the failure modes identified through the leak check (INV-1) and the transit model (INV-2). This table is extracted from the Rev. 3 breather bag analysis and annotated with the corresponding PIR findings.
 
-- CALDRY 1500 foil material specification and layer structure
-- Bag geometry and port layout
-- Check valve specification (2 PSIG cracking pressure, manufacturer, part number)
-- Fill port specification
-- Helium leak test procedure details and detection limits
+::: {#tbl-failure-modes tbl-colwidths="[22,30,30,18]"}
+| Failure Mode | Root Cause | Consequence | PIR Finding |
+|:-------------|:-----------|:------------|:------------|
+| Check valve stays open during ascent | Back-pressure closure incompatible with sustained pressure differential | Continuous N~2~ venting; sub-atmospheric return | @fnd-sh-004, @fnd-sh-009 |
+| Check valve does not reseat reliably | CALDRY 1500 + PTFE not a hermetic seal surface | Ambient air ingress through valve port | @fnd-sh-002 |
+| Bag compliance exceeded | Required $\Delta V$ exceeds available bag capacity | Pressure excursion beyond bag capacity; forced venting | @fnd-sh-004 |
+| Unknown initial condition | Fill port leaks; undocumented fill volume | No repeatability between units | @fnd-sh-003 |
+| Seal ingress on return | Positive-pressure seals not rated for sub-atmospheric conditions | Moisture, O~2~, biological contamination confirmed | @fnd-sh-008 |
+
+Known failure modes of the breather bag shipping concept. Source: Breather Bag Analysis Rev. 3.
 :::
+
+## Model Symbols
+
+::: {#tbl-symbols tbl-colwidths="[15,15,70]"}
+| Symbol | Units | Definition |
+|:-------|:------|:-----------|
+| $V_{fixed}$ | L (or m^3^) | Total rigid connected nitrogen volume (modules + tubing + manifolds) |
+| $V_{bag}$ | L | Current bag volume (0 to $V_{bag,max}$) |
+| $V_{bag,max}$ | L | Maximum bag capacity (22 L for CALDRY 1500) |
+| $V_{bag,init}$ | L | Bag volume at seal-up (~11 L nominal) |
+| $P_{seal}$ | Pa | Atmospheric pressure at seal-up (101,325 Pa) |
+| $P_{amb}$ | Pa | Ambient pressure (varies with altitude) |
+| $P_{int}$ | Pa | Internal nitrogen pressure |
+| $P_{vent,g}$ | Pa | Vent valve cracking pressure, gauge (13,790 Pa = 2 PSIG) |
+| $T_{seal}$ | K | Temperature at seal-up (293.15 K = 20 °C) |
+| $T_{hot}$ | K | Maximum temperature in transport envelope (313.15 K = 40 °C) |
+| $n$ | mol | Retained nitrogen mole inventory |
+| $\alpha$ | -- | Volume expansion ratio (@eq-alpha) |
+| $\gamma$ | -- | Return-pressure ratio (@eq-gamma) |
+| $\Delta P$ | Pa | Internal minus ambient pressure differential |
+
+Model symbols and definitions.
+:::
+
+## Bag Assembly Configuration
+
+The CALDRY 1500 bag assembly consists of a multilayer foil reservoir with two port connections:
+
+1. **Fill port** -- used during initial nitrogen charge at seal-up. Intended to be sealed after filling.
+2. **Check valve port** -- holds the 2 PSIG outward-only check valve. This is the only intentional gas transfer path during transit.
+
+The foil material is a multilayer laminate designed for moisture barrier applications. The bag is heat-sealed around its perimeter. The helium leak check (INV-1) confirms that the foil material and heat seals are gas-tight; the leakage paths are at the two port connections.
+
+<!-- TODO: Add CALDRY 1500 material datasheet excerpt, layer structure,
+     and measured permeation rates if available. Add valve manufacturer
+     and part number when confirmed. -->

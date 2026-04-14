@@ -1,0 +1,152 @@
+# =============================================================================
+# PIR-SH-001 Traceability Registry
+# =============================================================================
+# This file tracks investigations, findings, and their dispositions for the
+# shipping project. As the project progresses through EPS/EDS/TPS/TAR, forward
+# links (req, dsn, ver) connect findings to downstream requirements, design
+# decisions, and verification items.
+#
+# ID convention: FND-SH-nnn (finding), REQ-SH-nnn (requirement), etc.
+# See _shared/templates/document-types.md for the full scheme.
+# =============================================================================
+
+project:
+  code: SH
+  name: Shipping Failure Mode Investigation
+  pir: PIR-SH-001
+
+investigations:
+  INV-1:
+    title: Helium leak check of bag assembly
+    status: complete
+    method: Helium fill + sniffer detector on new unused bag
+    document: failure-mechanism.qmd#sec-inv-leak-check
+    findings: [FND-SH-001, FND-SH-002, FND-SH-003]
+
+  INV-2:
+    title: Quasi-static transit model (2 PSIG vent)
+    status: in-progress
+    method: Ideal-gas quasi-static simulation, 9-segment flight profile
+    document: failure-mechanism.qmd#sec-inv-transit
+    notebook: output/jupyter-notebook/nitrogen-shipping-coolprop-cycle.ipynb
+    findings: [FND-SH-004, FND-SH-005, FND-SH-006, FND-SH-007, FND-SH-008, FND-SH-009]
+
+  INV-3:
+    title: Measure V_fixed
+    status: not-started
+    method: Physical measurement of rigid connected nitrogen volume
+    document: null
+    findings: []
+
+findings:
+  # --- From INV-1: Helium Leak Check ---
+  FND-SH-001:
+    source: INV-1
+    statement: >
+      Helium leak testing of a new bag assembly detects no leakage or
+      permeation through the bag foil material or any heat-sealed seam.
+      The bag material itself is not a leakage path.
+    disposition: TBD
+    forward_links: []
+
+  FND-SH-002:
+    source: INV-1
+    statement: >
+      Helium leakage is detected at the check valve (2 PSIG vent) port.
+      The port connection does not seal sufficiently to prevent gas transfer
+      in either direction.
+    disposition: TBD
+    forward_links: []
+
+  FND-SH-003:
+    source: INV-1
+    statement: >
+      Helium leakage is detected at the fill port. The port connection
+      does not seal sufficiently.
+    disposition: TBD
+    forward_links: []
+
+  # --- From INV-2: Transit Model ---
+  FND-SH-004:
+    source: INV-2
+    statement: >
+      The bag saturates (reaches 22 L maximum volume) for any V_fixed above
+      14.1 L under the simultaneous worst-case assumption. With the 2 PSIG
+      cracking pressure, the system sustains up to 13.79 kPa gauge
+      overpressure after saturation before the valve opens. Venting onset
+      in the nominal flight profile occurs at approximately 68 L.
+    disposition: TBD
+    forward_links: []
+
+  FND-SH-005:
+    source: INV-2
+    statement: >
+      On the return leg, if V_fixed exceeds approximately 102 L and the
+      system has vented, the remaining nitrogen is insufficient to maintain
+      ambient pressure in the rigid volume after the bag collapses. Internal
+      pressure falls below ambient and the seal network admits atmospheric
+      contamination.
+    disposition: TBD
+    forward_links: []
+
+  FND-SH-006:
+    source: INV-2
+    statement: >
+      The failure mechanism does not require bag leakage or valve backflow.
+      A perfect outward-only vent and a perfect zero-stiffness bag still
+      produce return-leg underpressure once V_fixed exceeds the venting-onset
+      threshold. The failure is a mass-inventory problem, not a component
+      defect.
+    disposition: TBD
+    forward_links: []
+
+  FND-SH-007:
+    source: INV-2
+    statement: >
+      The rigid connected volume V_fixed of the production hardware is
+      unmeasured. Where V_fixed falls relative to the screening thresholds
+      determines whether the present concept can succeed.
+    disposition: TBD
+    forward_links: []
+
+  FND-SH-008:
+    source: INV-2
+    statement: >
+      Confirmed field failures (moisture ingress, biological contamination)
+      predate the breather bag mitigation. The same underpressure-driven
+      contamination appears in the original rigidly sealed concept,
+      establishing that the seal network is observably permeable under
+      sub-atmospheric conditions.
+    disposition: TBD
+    forward_links: []
+
+  FND-SH-009:
+    source: INV-2
+    statement: >
+      Each outbound venting event permanently reduces the retained nitrogen
+      inventory. Repeated shipping cycles ratchet the inventory downward.
+      A system that survives one cycle with marginal return pressure may
+      fail after cumulative mass loss over multiple cycles.
+    disposition: TBD
+    forward_links: []
+
+# =============================================================================
+# Future sections (populated when EPS/EDS/TPS/TAR are written):
+#
+# requirements:
+#   REQ-SH-001:
+#     source: FND-SH-002         # traces back to finding
+#     statement: ...
+#     verification: VER-SH-001   # traces forward to test item
+#
+# design_decisions:
+#   DSN-SH-001:
+#     satisfies: REQ-SH-001
+#     statement: ...
+#
+# verification:
+#   VER-SH-001:
+#     verifies: REQ-SH-001
+#     method: test | analysis | inspection | demonstration
+#     status: not-started
+# =============================================================================
