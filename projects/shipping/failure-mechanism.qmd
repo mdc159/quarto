@@ -27,7 +27,7 @@ keywords:
 
 # Summary {#sec-summary}
 
-This report investigates the shipping failure mode of the nitrogen-purged optical assembly. The investigation is motivated by confirmed field contamination events (moisture ingress, biological contamination) following air transport. Two lines of investigation are pursued: a helium leak check of the breather bag assembly, and a quasi-static thermodynamic model of the round-trip transit cycle.
+This report investigates the shipping failure mode of the nitrogen-purged optical assembly. The investigation is motivated by confirmed field contamination events (moisture ingress, biological contamination) following air transport. Two lines of investigation are pursued: a helium leak check of the breather bag assembly, and a quasi-static thermodynamic model of the round-trip transit cycle. A critical unknown limits both investigations: the rigid connected volume $V_{fixed}$ (total of modules, tubing, and manifolds) has never been measured. All screening thresholds in this report are functions of $V_{fixed}$, and the production hardware cannot be located on the screening map until this measurement is completed (INV-3).
 
 The current status of each investigation and the overall roadmap are summarized below.
 
@@ -109,7 +109,7 @@ The bag is filled with helium and inspected with a helium sniffer detector. The 
 - **Check valve port:** Helium leakage detected. The port connection for the 2 PSIG outward-only check valve does not seal sufficiently.
 - **Fill port:** Helium leakage detected. The fill port connection does not seal sufficiently.
 
-Both port areas show evidence of inadequate sealing. The bag material itself is not a leakage path.
+Both port areas show evidence of inadequate sealing. The bag material itself is not a leakage path. Quantitative leak rates were not measured during this test; the sniffer detection establishes the existence of a leak path but not its magnitude. Bounding the leak rate is identified as a follow-up action for INV-1.
 
 ::: callout-note
 ## Implication for the transit model
@@ -150,9 +150,10 @@ The analysis uses the minimum model needed to distinguish safe compliance behavi
 2. The nitrogen is well mixed throughout the connected volume.
 3. The foil bag is a geometric compliance element with negligible spring force.
 4. The bag volume is clamped to $0 \le V_{bag}(t) \le V_{bag,max}$.
-5. The bag valve opens at exactly 2 PSIG gauge, vents until equilibrium, and reseals perfectly. No inward flow.
-6. The shipping cycle is slow enough for a quasi-static treatment.
+5. The bag valve opens at exactly 2 PSIG gauge, vents until equilibrium, and reseals perfectly. No inward flow. **Note:** The helium leak check (@sec-inv-leak-check) contradicts this assumption — both ports leak bidirectionally. The model retains the perfect-valve assumption deliberately: if the failure mechanism appears even under idealized conditions, then port leakage makes the real system strictly worse than the model predicts.
+6. The shipping cycle is slow enough for a quasi-static treatment. Transient effects (rapid cabin pressure changes, thermal gradients within the gas volume) are neglected. The quasi-static envelope bounds the equilibrium states; real transient excursions cannot produce a more favorable outcome than the equilibrium prediction.
 7. Seal-up occurs at 20 °C and 101.325 kPa (sea level, standard conditions). The cargo hold temperature at cruise altitude is assumed equal to the seal-up temperature (20 °C) as a nominal baseline. These are coincidentally the same value; in the parametric sweeps they vary independently.
+8. The bag foil has negligible elastic stiffness. The CALDRY 1500 laminate is thin enough that restoring force across the usable volume range is orders of magnitude below the gas pressure forces. Bag stiffness does not materially affect the compliance behavior.
 
 This model is intentionally simple. It omits bag leakage, valve hysteresis, and transient fluid dynamics. That simplicity strengthens the root-cause argument: if the mechanism appears under idealized assumptions, then bag leakage is not required to explain the observed failures.
 
@@ -333,6 +334,25 @@ At $V_{fixed} = 60\;\text{L}$ with the 2 PSIG valve and the nominal flight profi
 
 The model evaluates a single round-trip. If the system vents on any leg, the deficit is permanent: the return leg cannot restore lost nitrogen. Repeated shipping cycles ratchet the retained inventory downward. A system that survives one cycle with marginal return pressure may fail after two or three cycles as the cumulative mass loss exceeds the remaining margin.
 
+## Cracking Pressure Paradox {#sec-paradox}
+
+The preceding analysis might suggest that the failure is avoidable by selecting a sufficiently high cracking pressure. A higher setpoint delays or eliminates venting through the valve, which preserves the nitrogen inventory in the idealized model. However, this reasoning neglects the distributed seal network.
+
+Any cracking pressure above zero produces a sustained positive gauge pressure inside the assembly whenever the bag is saturated. During cruise, the bag is full and the internal pressure exceeds ambient by up to the cracking threshold. This positive differential acts on every seal, joint, and port in the manifolded assembly — the same distributed network that admits atmospheric contamination under sub-atmospheric conditions. The seals are not hermetic (the field contamination history in @sec-field-history and the helium leak check in @sec-inv-leak-check both confirm this). A positive differential drives nitrogen outward through those paths for the duration of cruise.
+
+The result is a paradox with no resolution within the bag-and-valve concept:
+
+- **Low cracking pressure** (e.g., 0 PSIG ideal vent): the valve opens readily, nitrogen vents in bulk, and the return leg is sub-atmospheric.
+- **High cracking pressure** (e.g., 7.5 PSID or higher): the valve does not open, but the sustained positive differential drives nitrogen through the distributed seal leaks for the entire cruise duration. The mass loss is slower but acts over hours. On descent, the lost mass cannot be recovered and the return leg may still be sub-atmospheric.
+
+The cracking pressure trades the rate and path of mass loss but does not eliminate it. In both regimes, the system arrives at the return leg with less nitrogen than it started with. The only difference is whether the loss occurs through a single intentional path (the valve) or through the distributed seal network.
+
+::: callout-note
+## Quantifying the distributed leak rate
+
+The magnitude of the distributed seal leakage under positive gauge pressure is unknown. A leak-down test — pressurizing the sealed assembly and monitoring the pressure decay — would bound this rate. Even a coarse measurement (e.g., "pressure decays to ambient within one hour at 2 PSIG") would establish whether the distributed path is consequential over a multi-hour cruise.
+:::
+
 # Findings {#sec-findings}
 
 ## From INV-1: Helium Leak Check
@@ -384,6 +404,21 @@ The model evaluates a single round-trip. If the system vents on any leg, the def
 *Disposition: TBD*
 :::
 
+::: {#fnd-sh-010}
+**FND-SH-010:** Increasing the valve cracking pressure does not resolve the mass-loss mechanism. Any positive gauge pressure sustained during cruise drives nitrogen outward through the distributed seal network. The cracking pressure trades the rate and path of nitrogen loss (bulk venting through the valve versus slow permeation through distributed seals) but does not eliminate it. See @sec-paradox.
+*Disposition: TBD*
+:::
+
+## From INV-1: Fill Port Design
+
+::: {#fnd-sh-011}
+**FND-SH-011:** The fill port joint stack-up consists of flat Teflon washers sandwiching the bag foil material, compressed by a single small-diameter fastener. The bag foil is incompressible across its thickness and does not deform to fill surface irregularities. The joint geometry is mechanically incapable of producing a face seal: no gasket-like deformation occurs regardless of applied torque. This is consistent with the helium leakage detected at the fill port in INV-1 (FND-SH-003) and constitutes a design limitation, not a workmanship issue.
+*Disposition: TBD*
+:::
+
+<!-- NOTE: FND-SH-011 stack-up details are preliminary — Mike to verify
+     the exact washer geometry, fastener size, and layup sequence. -->
+
 # Conclusions {#sec-conclusions}
 
 The transit model and the helium leak check together establish that the shipping concept has two independent vulnerability paths:
@@ -393,6 +428,70 @@ The transit model and the helium leak check together establish that the shipping
 2. **Port leakage** -- Independent of the thermodynamic mechanism, the check valve port and fill port leak. This provides a gas transfer path in both directions that the idealized transit model does not account for. Port leakage can introduce contamination even if the bag and valve function as intended.
 
 The immediate next step is to measure $V_{fixed}$ (INV-3) and compare the measurement against the screening thresholds in @tbl-thresholds. Depending on where $V_{fixed}$ falls, either the thermodynamic mechanism alone, the port leakage alone, or both may be responsible for the observed field failures.
+
+<!-- ================================================================
+     WORKING SECTION — Not for distribution.
+     This section captures the strategic argument structure and
+     remaining work plan. It will be removed or absorbed into the
+     final document once the investigations close out.
+     ================================================================ -->
+
+# Working Notes: Argument Strategy and Remaining Work {#sec-working-notes .unnumbered}
+
+::: callout-warning
+## Internal working section — not for distribution
+
+This section is a planning artifact. It outlines the argument the PIR needs to land, the escape hatches it must close, and the data still required. It will be removed before the document is issued.
+:::
+
+## Where we are
+
+The PIR currently establishes:
+
+1. The thermodynamic mass-loss mechanism is real and does not require any component defect (FND-SH-006).
+2. The helium leak check shows both ports leak bidirectionally (FND-SH-002, FND-SH-003).
+3. The fill port design is mechanically incapable of sealing (FND-SH-011).
+4. Raising the cracking pressure does not resolve the problem — it trades bulk venting for distributed seal leakage (FND-SH-010, @sec-paradox).
+
+The document is missing two things: the actual $V_{fixed}$ value and a leak rate bound.
+
+## What the PIR needs to show
+
+The core conclusion is: **the bag-and-valve concept has fundamental flaws that no parameter adjustment can resolve.** The audience will try to save the concept by reaching for escape hatches. Each must be closed:
+
+| Escape hatch | How the PIR closes it |
+|---|---|
+| "V_fixed is small enough — it never vents" | Even below the 68 L venting threshold, the ports leak (INV-1). Over a 30–60 day shipping window, any leak path is consequential. The concept requires hermetic ports it does not have. |
+| "Use a higher cracking pressure valve" | The paradox (@sec-paradox): higher cracking pressure creates sustained positive ΔP, driving N~2~ through distributed seals for the entire cruise. The system still arrives at the return leg with less nitrogen. |
+| "Fix the port seals and keep the concept" | The fill port geometry cannot seal (FND-SH-011). The check valve port seats PTFE against foil — not a hermetic interface. Fixing the seals requires redesigning the port joints, at which point the concept is no longer the same concept. |
+| "One trip is fine — don't reuse" | The multi-cycle ratchet (FND-SH-009) defeats this if the system is marginal. And the 30–60 day single-trip duration is long enough for port leakage to introduce contamination even without venting. |
+
+## Remaining data to close the argument
+
+| Item | Owner | What it proves | Status |
+|---|---|---|---|
+| $V_{fixed}$ from CAD model (module volumes + tubing estimate) | Mike | Locates production hardware on the screening map. Determines whether the system is in the "no venting" or "venting" regime. | In progress |
+| Leak-down test (pressurize sealed assembly, monitor decay) | Mike (stretch) | Bounds the distributed seal leak rate. Even a coarse result ("decays to ambient in < 1 hr at 2 PSIG") establishes the timescale. | Not started |
+| Fill port stack-up verification (exact geometry, fastener size) | Mike | Strengthens FND-SH-011 with specifics | Not started |
+
+## How the document closes out
+
+Once $V_{fixed}$ is known:
+
+- If $V_{fixed} < 68\;\text{L}$: the system does not vent under the nominal profile. The thermodynamic mechanism alone does not cause failure. **But** port leakage (INV-1) and the fill port design flaw (FND-SH-011) still provide independent contamination paths over the shipping duration. The concept fails on seal integrity, not thermodynamics.
+- If $V_{fixed} > 68\;\text{L}$: the system vents nitrogen on the outbound leg. The thermodynamic mechanism causes return-leg underpressure independent of any seal defect. The concept fails on both thermodynamics *and* seal integrity.
+
+Either way, the PIR concludes with a list of implied requirements for any successor design — without proposing the solution. That handoff goes to the EPS.
+
+## Implied requirements (preview — not yet formal)
+
+These are the requirements that the findings imply. They become formal REQ-SH-nnn items in the EPS, not here.
+
+1. The shipping concept must conserve nitrogen mass across the full round-trip cycle, including multi-cycle use.
+2. Internal gauge pressure must remain at or near zero throughout transit to avoid driving nitrogen through distributed seals.
+3. All gas-boundary joints must be capable of forming a hermetic seal with the materials and geometry used.
+4. The concept must tolerate the full ICAO cabin altitude range (sea level to 8,000 ft) and the specified temperature range (20–40 °C) without relying on venting.
+5. The compliance mechanism must have sufficient stroke volume to absorb the thermal-barometric expansion without pressurizing the system.
 
 # Appendix A: Bag Assembly Reference {#sec-appendix-bag}
 

@@ -21,7 +21,7 @@ investigations:
     status: complete
     method: Helium fill + sniffer detector on new unused bag
     document: failure-mechanism.qmd#sec-inv-leak-check
-    findings: [FND-SH-001, FND-SH-002, FND-SH-003]
+    findings: [FND-SH-001, FND-SH-002, FND-SH-003, FND-SH-011]
 
   INV-2:
     title: Quasi-static transit model (2 PSIG vent)
@@ -29,7 +29,7 @@ investigations:
     method: Ideal-gas quasi-static simulation, 9-segment flight profile
     document: failure-mechanism.qmd#sec-inv-transit
     notebook: output/jupyter-notebook/nitrogen-shipping-coolprop-cycle.ipynb
-    findings: [FND-SH-004, FND-SH-005, FND-SH-006, FND-SH-007, FND-SH-008, FND-SH-009]
+    findings: [FND-SH-004, FND-SH-005, FND-SH-006, FND-SH-007, FND-SH-008, FND-SH-009, FND-SH-010]
 
   INV-3:
     title: Measure V_fixed
@@ -127,6 +127,30 @@ findings:
       inventory. Repeated shipping cycles ratchet the inventory downward.
       A system that survives one cycle with marginal return pressure may
       fail after cumulative mass loss over multiple cycles.
+    disposition: TBD
+    forward_links: []
+
+  FND-SH-010:
+    source: INV-2
+    statement: >
+      Increasing the valve cracking pressure does not resolve the mass-loss
+      mechanism. Any positive gauge pressure sustained during cruise drives
+      nitrogen outward through the distributed seal network. The cracking
+      pressure trades the rate and path of nitrogen loss but does not
+      eliminate it.
+    disposition: TBD
+    forward_links: []
+
+  # --- From INV-1: Fill Port Design ---
+  FND-SH-011:
+    source: INV-1
+    statement: >
+      The fill port joint stack-up (flat Teflon washers sandwiching bag foil,
+      single small-diameter fastener) is mechanically incapable of producing
+      a face seal. The bag foil is incompressible across its thickness and
+      does not deform to fill surface irregularities. This is a design
+      limitation, not a workmanship issue. Consistent with helium leakage
+      at the fill port (FND-SH-003).
     disposition: TBD
     forward_links: []
 
