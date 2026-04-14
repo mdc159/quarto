@@ -403,11 +403,11 @@ The immediate next step is to measure $V_{fixed}$ (INV-3) and compare the measur
 ::: {#tbl-failure-modes tbl-colwidths="[22,30,30,18]"}
 | Failure Mode | Root Cause | Consequence | PIR Finding |
 |:-------------|:-----------|:------------|:------------|
-| Check valve stays open during ascent | Back-pressure closure incompatible with sustained pressure differential | Continuous N~2~ venting; sub-atmospheric return | @fnd-sh-004, @fnd-sh-009 |
-| Check valve does not reseat reliably | CALDRY 1500 + PTFE not a hermetic seal surface | Ambient air ingress through valve port | @fnd-sh-002 |
-| Bag compliance exceeded | Required $\Delta V$ exceeds available bag capacity | Pressure excursion beyond bag capacity; forced venting | @fnd-sh-004 |
-| Unknown initial condition | Fill port leaks; undocumented fill volume | No repeatability between units | @fnd-sh-003 |
-| Seal ingress on return | Positive-pressure seals not rated for sub-atmospheric conditions | Moisture, O~2~, biological contamination confirmed | @fnd-sh-008 |
+| Check valve stays open during ascent | Back-pressure closure incompatible with sustained pressure differential | Continuous N~2~ venting; sub-atmospheric return | FND-SH-004, FND-SH-009 |
+| Check valve does not reseat reliably | CALDRY 1500 + PTFE not a hermetic seal surface | Ambient air ingress through valve port | FND-SH-002 |
+| Bag compliance exceeded | Required $\Delta V$ exceeds available bag capacity | Pressure excursion beyond bag capacity; forced venting | FND-SH-004 |
+| Unknown initial condition | Fill port leaks; undocumented fill volume | No repeatability between units | FND-SH-003 |
+| Seal ingress on return | Positive-pressure seals not rated for sub-atmospheric conditions | Moisture, O~2~, biological contamination confirmed | FND-SH-008 |
 
 Known failure modes of the breather bag shipping concept. Source: Breather Bag Analysis Rev. 3.
 :::
