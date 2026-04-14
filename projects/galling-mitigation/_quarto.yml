@@ -12,6 +12,7 @@ project:
   render:
     - report.qmd
     - test-plan.qmd
+    - digital-twin.qmd
 
 metadata-files:
   - ../../_shared/_metadata.yml

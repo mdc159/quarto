@@ -1,0 +1,4 @@
+pairing	breakaway_mean_mNm	breakaway_p05_mNm	breakaway_p95_mNm	running_mean_mNm	running_p05_mNm	running_p95_mNm	ordering_probability_MP02_lt_MP04_lt_MP01
+MP-01	48.2534	39.4813	57.2819	48.8071	41.3667	56.3460	1.0000
+MP-02	8.7868	7.2279	10.4369	11.9508	10.0864	13.8654	1.0000
+MP-04	28.5675	23.4338	34.1339	31.5371	26.8239	36.6841	1.0000

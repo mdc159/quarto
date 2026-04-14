@@ -1,0 +1,2 @@
+- [Mike Profile](user_mike_profile.md) — Opto-mechanical engineer, Quarto+CoolProp publishing, nitrogen shipping analysis
+- [Nitrogen Notebook](project_nitrogen_notebook.md) — Notebook location, critical bugs, and quality issues from April 2026 review

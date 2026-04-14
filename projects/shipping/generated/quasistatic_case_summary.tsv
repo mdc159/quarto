@@ -1,0 +1,7 @@
+scenario	p_vent_gauge_bar	V_fixed_L	min_dp_bar	t_min_dp_hr	state_at_min_dp	total_vented_g	t_bag_full_hr	t_vent_start_hr	t_bag_collapse_hr	final_dp_bar	final_state
+ideal_vent	0	12	0	0	tracking ambient	0	NaN	NaN	NaN	0	tracking ambient
+ideal_vent	0	30	0	0	tracking ambient	5.0597187780549	5.66666666666667	5.66666666666667	NaN	0	tracking ambient
+ideal_vent	0	60	-0.0371109809635959	24	bag collapsed	15.3692043672807	3.58333333333333	3.58333333333333	23.0833333333333	-0.0371109809635959	bag collapsed
+vent_2psig	0.1378951458	12	0	0	tracking ambient	0	NaN	NaN	NaN	0	tracking ambient
+vent_2psig	0.1378951458	30	0	0	tracking ambient	0	5.66666666666667	NaN	NaN	0	tracking ambient
+vent_2psig	0.1378951458	60	0	0	tracking ambient	3.20336572044312	3.58333333333333	7.08333333333333	NaN	0	tracking ambient

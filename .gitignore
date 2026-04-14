@@ -81,3 +81,4 @@ local.settings.json
 # -------- Logs (selective) --------------------------------------------------
 fork-terminal.log
 quarto-render.log
+quarto_workspace.egg-info/

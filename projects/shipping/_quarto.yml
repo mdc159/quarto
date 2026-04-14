@@ -11,6 +11,8 @@
 project:
   type: default
   output-dir: _output
+  resources:
+    - generated/**
   render:
     - failure-mechanism.qmd
     - compliance-volume-design.qmd
@@ -27,4 +29,9 @@ csl: ../../_shared/ieee.csl
 # Tell Pandoc where to look for resources (CSL, images, etc.)
 resource-path:
   - .
+  - generated
   - ../../_shared
+  # Keep the external source directory available for manual refreshes, but
+  # use project-local copies for live preview so the Quarto preview server can
+  # resolve image assets under the project root.
+  - D:/matlab-mcp/docs/shipping/generated

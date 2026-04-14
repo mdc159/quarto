@@ -64,7 +64,7 @@ Objective-to-claim traceability.
 
 ## In-Scope Items
 
-- Five candidate material pairings (@tbl-material-pairings).
+- Five candidate material pairings listed in @tbl-material-pairings.
 
 - Dry-nitrogen atmosphere, 26°C ± 2°C.
 
@@ -140,13 +140,13 @@ The validation strategy creates a direct chain of evidence linking each claim to
 ::: {.callout-tip title="Validation: Claim C-001 (Model Fidelity)"}
 The inline torque transducer captures real-time torque data with high precision (0.05% repeatability) while the micro-stepping controller tracks angular position. These data streams feed the friction model, which predicts torque behavior based on material properties and wear mechanisms. The model passes validation when it correctly orders the pairings by friction torque magnitude and predicts values within ±15% of measured values, demonstrating sufficient accuracy for future predictions without bench testing.
 
-The model incorporates both static and dynamic friction coefficients for each material pairing, building on established tribological relationships for threaded interfaces. Initial friction values derive from literature (e.g., μ≈0.34 for 304 SS on phosphor bronze), but the model adapts these values based on actual test data. The model's wear-in equation (@eq-wearin) accounts for surface conditioning during early cycles, while its galling progression equation (@eq-galling) captures the exponential torque increase seen in failing interfaces. This dual-mode approach ensures accurate prediction of both normal wear and incipient galling.
+The model incorporates both static and dynamic friction coefficients for each material pairing, building on established tribological relationships for threaded interfaces. Initial friction values derive from literature (e.g., μ≈0.34 for 304 SS on phosphor bronze), but the model adapts these values based on actual test data. The wear-in relation in Eq. @eq-wearin accounts for surface conditioning during early cycles, while the galling progression relation in Eq. @eq-galling captures the exponential torque increase seen in failing interfaces. This dual-mode approach ensures accurate prediction of both normal wear and incipient galling.
 :::
 
 ::: {.callout-tip title="Validation: Claim C-002 (Galling Severity)"}
 The Galling Severity Index (GSI) calculation combines torque progression data with visual inspection to quantify galling resistance. By conducting tests in a controlled N₂ environment with identical preload conditions (46.7 N) to the flight hardware, the GSI values directly represent real-world performance. The correlation with ASTM G98 [@astm_g98] standard test results validates that the simplified GSI approach captures the same fundamental galling behavior as industry-standard methods.
 
-The GSI formula (@eq-gsi) incorporates both torque increase (indicating friction change due to surface damage) and the number of cycles before visible thread damage appears under 10× magnification. This dual approach improves upon traditional single-parameter assessments by combining functional performance with physical evidence. Previous studies show strong correlation between similar indices and standard ASTM G98 galling thresholds for various material combinations. Visual inspection utilizes standardized reference images for consistent rating of damage severity.
+The GSI formula in Eq. @eq-gsi incorporates both torque increase (indicating friction change due to surface damage) and the number of cycles before visible thread damage appears under 10× magnification. This dual approach improves upon traditional single-parameter assessments by combining functional performance with physical evidence. Previous studies show strong correlation between similar indices and standard ASTM G98 galling thresholds for various material combinations. Visual inspection utilizes standardized reference images for consistent rating of damage severity.
 :::
 
 ::: {.callout-tip title="Validation: Claim C-003 (Particle Generation)"}
@@ -162,7 +162,7 @@ Sample preparation follows strict ASTM protocols, with test articles cleaned ide
 :::
 
 ::: {.callout-tip title="Validation: Claim C-005 (Precision Performance)"}
-The laser displacement sensor directly measures the actual position achieved versus commanded position, capturing any resolution loss or drift. The Precision Performance Score (@eq-pps) combines two key precision metrics---positional error and drift after dwell---into a single figure of merit. Stability of this score over 25 cycles proves the mechanical interface maintains precision throughout its operational life.
+The laser displacement sensor directly measures the actual position achieved versus commanded position, capturing any resolution loss or drift. The Precision Performance Score in Eq. @eq-pps combines two key precision metrics---positional error and drift after dwell---into a single figure of merit. Stability of this score over 25 cycles proves the mechanical interface maintains precision throughout its operational life.
 
 The PPS formula weighs both immediate positioning accuracy (RMS position error) and temporal stability (drift after dwell). These factors directly impact optical alignment capabilities. The 5-minute dwell period simulates a realistic operational scenario where the adjuster remains still between occasional adjustments. This test reveals any tendency for the interface to creep due to stress relaxation or microscopic settling. By tracking PPS across multiple cycles, the test also captures any degradation in precision due to progressive wear or surface changes.
 :::
@@ -906,7 +906,7 @@ The cell below evaluates @eq-wearin and @eq-galling for representative parameter
 
 ```{python}
 #| label: fig-friction-models
-#| fig-cap: "Wear-in (@eq-wearin) and galling (@eq-galling) model curves over 25 cycles. The wear-in case (blue) approaches a steady-state torque asymptotically; the galling case (red) shows exponential degradation. The boundary between these regimes is where the material screening campaign discriminates pairings."
+#| fig-cap: "Wear-in and galling model curves over 25 cycles using Eq. @eq-wearin and Eq. @eq-galling. The wear-in case (blue) approaches a steady-state torque asymptotically; the galling case (red) shows exponential degradation. The boundary between these regimes is where the material screening campaign discriminates pairings."
 #| fig-alt: "Two friction-torque curves over 25 cycles. Blue wear-in curve rises from 0.20 to ~0.27 N·m and plateaus. Red galling curve rises slowly then accelerates, reaching ~0.55 N·m by cycle 25."
 #| code-fold: true
 #| code-summary: "Show friction model evaluation (Python)"
