@@ -6,6 +6,7 @@ import os
 import re
 import sys
 import textwrap
+from datetime import datetime
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable
@@ -14,6 +15,9 @@ from typing import Any, Iterable
 DEFAULT_MODEL = "o3"
 DEFAULT_REASONING_EFFORT = "high"
 DEFAULT_INCLUDE_SUPPORTING = True
+DEFAULT_TIMEOUT_SECONDS = 300
+DEFAULT_BATCH_CHARS = 30_000
+DEFAULT_MAX_SECTIONS_PER_BATCH = 10
 MAX_SECTION_CHARS = 7_500
 MAX_SECTION_DIGEST_CHARS = 1_200
 MAX_SUPPORT_FILE_CHARS = 1_500
@@ -71,6 +75,17 @@ class Section:
     text: str
 
 
+@dataclass
+class ReviewRuntime:
+    verbose: bool
+
+    def log(self, message: str) -> None:
+        if not self.verbose:
+            return
+        timestamp = datetime.now().strftime("%H:%M:%S")
+        print(f"[{timestamp}] {message}", flush=True)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Run a deep engineering review over a technical document.",
@@ -104,12 +119,18 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Limit the number of parsed sections reviewed after chunking.",
     )
+    parser.add_argument(
+        "--quiet",
+        action="store_true",
+        help="Suppress progress logging to stderr.",
+    )
     return parser
 
 
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
+    runtime = ReviewRuntime(verbose=not args.quiet)
 
     target = Path(args.target).expanduser().resolve()
     if not target.exists():
@@ -118,11 +139,14 @@ def main() -> int:
 
     workspace_root = find_workspace_root(target)
     load_dotenv(workspace_root / ".env")
+    runtime.log(f"Resolved workspace root: {workspace_root}")
+    runtime.log(f"Resolved target: {target}")
 
     model = args.model or os.getenv("TECH_DOC_REVIEW_MODEL", DEFAULT_MODEL)
     reasoning_effort = os.getenv(
         "TECH_DOC_REVIEW_REASONING_EFFORT", DEFAULT_REASONING_EFFORT
     )
+    timeout_seconds = env_int("TECH_DOC_REVIEW_TIMEOUT_SECONDS") or DEFAULT_TIMEOUT_SECONDS
     include_supporting = env_bool(
         "TECH_DOC_REVIEW_INCLUDE_SUPPORTING", DEFAULT_INCLUDE_SUPPORTING
     ) and not args.no_supporting
@@ -130,6 +154,11 @@ def main() -> int:
         args.max_sections
         if args.max_sections is not None
         else env_int("TECH_DOC_REVIEW_MAX_SECTIONS")
+    )
+    batch_chars = env_int("TECH_DOC_REVIEW_BATCH_CHARS") or DEFAULT_BATCH_CHARS
+    max_sections_per_batch = (
+        env_int("TECH_DOC_REVIEW_MAX_SECTIONS_PER_BATCH")
+        or DEFAULT_MAX_SECTIONS_PER_BATCH
     )
 
     project_root = infer_project_root(target)
@@ -150,6 +179,7 @@ def main() -> int:
     if not sections:
         print(f"No reviewable content found in {target}", file=sys.stderr)
         return 2
+    runtime.log(f"Parsed {len(sections)} review section(s)")
 
     supporting_files = discover_supporting_files(
         workspace_root=workspace_root,
@@ -159,9 +189,16 @@ def main() -> int:
         extra_paths=support_paths,
     )
     support_context = build_support_context(workspace_root, supporting_files)
+    runtime.log(f"Discovered {len(supporting_files)} support file(s)")
+    runtime.log(
+        "Reviewer configuration: "
+        f"model={model}, reasoning_effort={reasoning_effort}, timeout={timeout_seconds}s, "
+        f"batch_chars={batch_chars}, max_sections_per_batch={max_sections_per_batch}"
+    )
 
     try:
         report = run_review(
+            runtime=runtime,
             workspace_root=workspace_root,
             project_root=project_root,
             target=target,
@@ -171,6 +208,9 @@ def main() -> int:
             missing_support=missing_support,
             model=model,
             reasoning_effort=reasoning_effort,
+            timeout_seconds=timeout_seconds,
+            batch_chars=batch_chars,
+            max_sections_per_batch=max_sections_per_batch,
         )
     except RuntimeError as exc:
         print(str(exc), file=sys.stderr)
@@ -184,6 +224,9 @@ def main() -> int:
         report=report,
         json_only=args.json_only,
     )
+    runtime.log(f"Wrote JSON artifact: {json_path}")
+    if markdown_path:
+        runtime.log(f"Wrote markdown artifact: {markdown_path}")
 
     if args.json_only:
         print(json.dumps(report, indent=2))
@@ -260,15 +303,29 @@ def split_markdown_sections(path: Path) -> list[Section]:
     text = path.read_text(encoding="utf-8", errors="replace")
     lines = text.splitlines()
     heading_re = re.compile(r"^(#{1,6})\s+(.+?)\s*$")
+    fence_re = re.compile(r"^(```+|~~~+)")
 
     sections: list[Section] = []
     current_title = "Document preamble"
     current_start = 1
     current_lines: list[str] = []
+    in_fenced_block = False
+    active_fence: str | None = None
 
     for line_number, line in enumerate(lines, start=1):
+        fence_match = fence_re.match(line.strip())
+        if fence_match:
+            fence_token = fence_match.group(1)
+            fence_char = fence_token[0]
+            if not in_fenced_block:
+                in_fenced_block = True
+                active_fence = fence_char
+            elif active_fence == fence_char:
+                in_fenced_block = False
+                active_fence = None
+
         match = heading_re.match(line)
-        if match:
+        if match and not in_fenced_block:
             if current_lines:
                 sections.extend(
                     chunk_text_section(
@@ -403,6 +460,51 @@ def chunk_text_section(title: str, location: str, text: str) -> list[Section]:
     return chunks
 
 
+def batch_sections(
+    sections: list[Section],
+    max_batch_chars: int,
+    max_sections_per_batch: int,
+) -> list[list[Section]]:
+    batches: list[list[Section]] = []
+    current_batch: list[Section] = []
+    current_chars = 0
+
+    for section in sections:
+        section_chars = len(section.title) + len(section.location) + len(section.text) + 64
+        would_exceed_chars = current_batch and current_chars + section_chars > max_batch_chars
+        would_exceed_count = current_batch and len(current_batch) >= max_sections_per_batch
+
+        if would_exceed_chars or would_exceed_count:
+            batches.append(current_batch)
+            current_batch = []
+            current_chars = 0
+
+        current_batch.append(section)
+        current_chars += section_chars
+
+    if current_batch:
+        batches.append(current_batch)
+
+    return batches
+
+
+def render_section_batch(sections: list[Section]) -> str:
+    blocks: list[str] = []
+    for section in sections:
+        blocks.append(
+            textwrap.dedent(
+                f"""
+                [Section]
+                Title: {section.title}
+                Location: {section.location}
+                Text:
+                {section.text}
+                """
+            ).strip()
+        )
+    return "\n\n".join(blocks)
+
+
 def discover_supporting_files(
     workspace_root: Path,
     project_root: Path | None,
@@ -499,6 +601,7 @@ def summarize_support_file(workspace_root: Path, path: Path) -> str:
 
 
 def run_review(
+    runtime: ReviewRuntime,
     workspace_root: Path,
     project_root: Path | None,
     target: Path,
@@ -508,9 +611,13 @@ def run_review(
     missing_support: list[str],
     model: str,
     reasoning_effort: str,
+    timeout_seconds: int,
+    batch_chars: int,
+    max_sections_per_batch: int,
 ) -> dict[str, Any]:
     try:
         from openai import OpenAI
+        from openai import APIConnectionError, APIStatusError, APITimeoutError
     except ImportError as exc:
         raise RuntimeError(
             "The openai package is not installed in the workspace venv. "
@@ -524,11 +631,17 @@ def run_review(
         )
 
     _, ReviewReport = build_schema_models()
-    client = OpenAI()
+    client = OpenAI(timeout=timeout_seconds)
 
     project_label = project_root.name if project_root else "ad-hoc"
     document_outline = build_document_outline(workspace_root, target, sections)
     section_digests = build_section_digests(sections)
+    section_batches = batch_sections(
+        sections,
+        max_batch_chars=batch_chars,
+        max_sections_per_batch=max_sections_per_batch,
+    )
+    runtime.log(f"Grouped {len(sections)} section(s) into {len(section_batches)} batch(es)")
 
     bootstrap_prompt = textwrap.dedent(
         f"""
@@ -547,45 +660,84 @@ def run_review(
         """
     ).strip()
 
-    bootstrap_response = client.responses.create(
-        model=model,
-        instructions=REVIEW_INSTRUCTIONS,
-        input=bootstrap_prompt,
-        store=True,
-        reasoning={"effort": reasoning_effort},
-    )
+    runtime.log("Starting bootstrap review call")
+    try:
+        bootstrap_response = client.responses.create(
+            model=model,
+            instructions=REVIEW_INSTRUCTIONS,
+            input=bootstrap_prompt,
+            store=True,
+            reasoning={"effort": reasoning_effort},
+        )
+    except APITimeoutError as exc:
+        raise RuntimeError(
+            f"OpenAI bootstrap call timed out after {timeout_seconds}s. "
+            "Try --max-sections for a bounded run or increase TECH_DOC_REVIEW_TIMEOUT_SECONDS."
+        ) from exc
+    except APIConnectionError as exc:
+        raise RuntimeError(f"OpenAI bootstrap call failed to connect: {exc}") from exc
+    except APIStatusError as exc:
+        raise RuntimeError(
+            f"OpenAI bootstrap call failed with status {exc.status_code}: {exc.response}"
+        ) from exc
+    runtime.log(f"Bootstrap completed: response_id={bootstrap_response.id}")
 
     section_reports: list[dict[str, Any]] = []
-    for section in sections:
+    for index, batch in enumerate(section_batches, start=1):
+        batch_summary = ", ".join(section.title for section in batch[:3])
+        if len(batch) > 3:
+            batch_summary += ", ..."
+        runtime.log(
+            f"Reviewing batch {index}/{len(section_batches)} containing "
+            f"{len(batch)} section(s): {batch_summary}"
+        )
+        batch_payload = render_section_batch(batch)
         section_prompt = textwrap.dedent(
             f"""
-            Review this section of the target document.
+            Review this batch of sections from the target document.
 
             Target: {display_path(target, workspace_root)}
-            Section title: {section.title}
-            Section location: {section.location}
+            Batch number: {index} of {len(section_batches)}
 
-            Return only supported findings for this section.
+            Return only supported findings from the sections shown below.
+            When you report a finding, use the exact section location strings
+            provided in the batch payload.
 
-            Section text:
-            {section.text}
+            Sections in this batch:
+            {batch_payload}
 
             Supporting context:
             {support_context or "No supporting files were discovered."}
             """
         ).strip()
 
-        response = client.responses.parse(
-            model=model,
-            instructions=REVIEW_INSTRUCTIONS,
-            input=section_prompt,
-            text_format=ReviewReport,
-            previous_response_id=bootstrap_response.id,
-            store=True,
-            reasoning={"effort": reasoning_effort},
-        )
+        try:
+            response = client.responses.parse(
+                model=model,
+                instructions=REVIEW_INSTRUCTIONS,
+                input=section_prompt,
+                text_format=ReviewReport,
+                previous_response_id=bootstrap_response.id,
+                store=True,
+                reasoning={"effort": reasoning_effort},
+            )
+        except APITimeoutError as exc:
+            raise RuntimeError(
+                f"OpenAI batch review timed out on batch {index}/{len(section_batches)} "
+                f"after {timeout_seconds}s."
+            ) from exc
+        except APIConnectionError as exc:
+            raise RuntimeError(
+                f"OpenAI batch review failed to connect on batch {index}/{len(section_batches)}: {exc}"
+            ) from exc
+        except APIStatusError as exc:
+            raise RuntimeError(
+                f"OpenAI batch review failed on batch {index}/{len(section_batches)} "
+                f"with status {exc.status_code}: {exc.response}"
+            ) from exc
         parsed = extract_parsed_response(response)
         section_reports.append(parsed)
+        runtime.log(f"Batch {index}/{len(section_batches)} completed")
 
     aggregate_findings = []
     aggregate_residual_risks: list[str] = []
@@ -620,16 +772,29 @@ def run_review(
         """
     ).strip()
 
-    synthesis_response = client.responses.parse(
-        model=model,
-        instructions=REVIEW_INSTRUCTIONS,
-        input=synthesis_prompt,
-        text_format=ReviewReport,
-        previous_response_id=bootstrap_response.id,
-        store=True,
-        reasoning={"effort": reasoning_effort},
-    )
+    runtime.log("Starting synthesis review call")
+    try:
+        synthesis_response = client.responses.parse(
+            model=model,
+            instructions=REVIEW_INSTRUCTIONS,
+            input=synthesis_prompt,
+            text_format=ReviewReport,
+            previous_response_id=bootstrap_response.id,
+            store=True,
+            reasoning={"effort": reasoning_effort},
+        )
+    except APITimeoutError as exc:
+        raise RuntimeError(
+            f"OpenAI synthesis call timed out after {timeout_seconds}s."
+        ) from exc
+    except APIConnectionError as exc:
+        raise RuntimeError(f"OpenAI synthesis call failed to connect: {exc}") from exc
+    except APIStatusError as exc:
+        raise RuntimeError(
+            f"OpenAI synthesis call failed with status {exc.status_code}: {exc.response}"
+        ) from exc
     final_report = extract_parsed_response(synthesis_response)
+    runtime.log("Synthesis completed")
 
     all_sources = [display_path(target, workspace_root)] + [
         display_path(path, workspace_root) for path in supporting_files
