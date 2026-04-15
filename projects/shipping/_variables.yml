@@ -1,0 +1,33 @@
+# =============================================================================
+# PIR-SH-001 — Quarto document variables
+# =============================================================================
+# Single source of truth for all threshold values used throughout
+# failure-mechanism.qmd.  Referenced via {{< var key >}} shortcodes.
+#
+# Corrected to ISA pressure at 8000 ft = 75,262 Pa (was 76,300 Pa).
+# =============================================================================
+
+# --- Shipping envelope constants ---
+p-seal-pa: 101325           # Pa (1 atm, seal-up pressure)
+p-seal-bar: 1.01325         # bar
+p-cruise-pa: 75262          # Pa (ISA at 8000 ft cabin altitude)
+p-cruise-bar: 0.75262       # bar
+t-seal-k: 293.15            # K (20 °C)
+t-hot-k: 313.15             # K (40 °C)
+bag-volume-l: 22            # L (CALDRY 1500 maximum)
+bag-init-l: 11              # L (50% initial fill)
+v-fixed-l: 35               # L (conservative estimate)
+p-crack-2psi-bar: 0.13790   # bar (2 psig cracking pressure)
+p-crack-2psi-pa: 13790      # Pa
+
+# --- Derived thresholds (from corrected cruise pressure) ---
+alpha: 1.4381               # expansion ratio = (P_seal/P_cruise)(T_hot/T_seal)
+no-vent-threshold-l: 14.11  # L — Eq. (no-vent): max V_fixed avoiding outbound venting
+ideal-return-threshold-l: 50.21   # L — Eq. (return-threshold) at ideal vent, ΔP_req = 0
+two-psig-return-threshold-l: 102.11  # L — same at 2 psig cracking
+
+# --- tbl-thresholds margin columns ---
+ideal-return-001-l: 48.64   # L — ideal vent, return ≥ +0.01 bar
+ideal-return-002-l: 47.16   # L — ideal vent, return ≥ +0.02 bar
+two-psig-return-001-l: 96.73   # L — 2 psig, return ≥ +0.01 bar
+two-psig-return-002-l: 91.88   # L — 2 psig, return ≥ +0.02 bar

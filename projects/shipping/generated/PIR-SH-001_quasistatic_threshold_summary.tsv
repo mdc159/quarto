@@ -1,0 +1,3 @@
+scenario	p_vent_gauge_bar	p_vent_gauge_psig	alpha	gamma_0bar	no_vent_limit_L	return_nonnegative_limit_L	return_plus10mbar_limit_L	return_plus20mbar_limit_L
+ideal_vent	0	0	1.4381	1.4381	14.11	50.21	48.64	47.16
+vent_2psig	0.1378951458	2	1.4381	1.2154	14.11	102.11	96.73	91.88

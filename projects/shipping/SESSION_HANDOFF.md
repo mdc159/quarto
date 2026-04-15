@@ -1,100 +1,118 @@
 # Session Handoff — Shipping Failure Mechanism Analysis
 
-**Last updated:** 2026-04-13
-**Status:** Quarto document renders clean (HTML). Ready for Mike's review and revision.
+**Last updated:** 2026-04-15 (session 3)
+**Branch:** master
+**Status:** All critical and major review findings resolved. Variable infrastructure in place. Codex reviewer re-run pending.
 
-## What was accomplished (2026-04-13 session)
+## Next Session Action
 
-### Thermo-engineer agent built
-- Merged two agents into one at `.claude/agents/thermo-engineer.md`
-- Backed by deep CoolProp research — reference docs at `_shared/ai_docs/coolprop-reference.md` and `_shared/ai_docs/thermo-engineering-reference.md`
-- Installed professional thermo stack into `.venv`: CoolProp 7.2, ht 1.2, fluids 1.3, thermo 0.6, chemicals 1.5, iapws 1.5, pint 0.25, pyromat 2.2, tabulate 0.10
-- `pyproject.toml` at workspace root declares all dependencies — reproducible setup via `uv pip install -e ".[dev]"`
+Review the Codex reviewer output from session 3 and address any new findings. Remaining lower-priority items:
 
-### Jupyter notebook overhauled
-**File:** `output/jupyter-notebook/nitrogen-shipping-coolprop-cycle.ipynb`
-- Reviewed by thermo-engineer agent with detailed critique (correctness, publication quality, analytical depth, code quality)
-- Fixed worst-deltaP detection (was reporting t=0 for borderline cases)
-- Converted simulate() to use CoolProp AbstractState (60-70% faster)
-- Colorblind-safe palette (Okabe-Ito), segment shading on all plots, process arrows on T-s/P-v
-- Renamed `T_cabin_C` → `T_cargo_C` (this is a 4000 lb crate in a cargo hold, not a cabin)
-- Fixed segment 4→5 temperature discontinuity (climb now ends at T_cargo_C, not T_seal_C)
-- `SCENARIOS` dict with 6 presets — change `ACTIVE_SCENARIO` string, Run All
-- Active scenario: `debatable_baseline` (V_fixed=60L, T_cargo=20°C, T_tarmac=40°C, P_crack=0 psig)
-- Added: assumptions section, expanded governing equations with venting derivation, parametric failure surface (contour + 3D + boundary overlay), interactive ipywidgets explorer (5 sliders)
+1. **Extend parametric sweep to 40 °C** — currently capped at 30 °C; shipping spec allows 40 °C. The callout note and @tbl-max-safe-volume caption acknowledge this limitation.
+2. **Obtain valve reseat citation** — FND-SH-006 disposition says "citation pending" (Mike has the document).
+3. **Consider regenerating @tbl-cases entirely from Python** — currently labeled as MATLAB-sourced with T_cargo = 20 °C. A full Python regeneration would eliminate the source-of-truth gap but changes many values.
 
-### Key engineering finding: the bag vent is unnecessary
-**The 0.5 bar circuit relief valve (PED 2014/68/EU) makes the bag vent unnecessary.**
-- Analytical upper bound: max overpressure at cruise = 0.33 bar gauge (even at 40°C cargo, V_fixed → ∞)
-- Would need 89.3°C cargo temperature to reach 0.5 bar — physically impossible in air freight
-- CoolProp Helmholtz EOS verification confirms ideal-gas bound within 0.03%
-- Parametric sweep: system safe for V_fixed 20–120 L, T_cargo 5–30°C at P_crack ≥ 7.25 psig
-- At P_crack = 0 (ideal vent, current bag valve): max safe V_fixed ≈ 63 L at 20°C
-- At P_crack ≥ 2 psig: safe everywhere up to 120+ L
+## What was accomplished (2026-04-15, session 3)
 
-### Quarto document updated
-**File:** `projects/shipping/failure-mechanism.qmd`
-- New section: "Upper Bound on Overpressure: The Bag Vent Is Unnecessary" (~420 lines)
-  - Analytical derivation with LaTeX equations (#eq-pint-bound, #eq-dp-bound, #eq-t-relief)
-  - CoolProp verification table (executable Python cell, code-fold)
-  - Parametric failure boundary plot — 5 P_crack contours (#fig-failure-boundary)
-  - Filled contour + 3D surface plot (#fig-dp-surface)
-  - Max safe volume summary table (#tbl-max-safe-volume)
-  - Six numbered validity conditions
-- Updated: Summary, High-pressure review, and Conclusions sections with forward references and new items 6–7
-- Renders clean to HTML
+### Variable infrastructure (review finding C1/source-of-truth)
+- Created `_variables.yml` with corrected ISA pressure (75,262 Pa vs old 76,300 Pa)
+- Wired into `_quarto.yml` via `metadata-files`
+- Recalculated all thresholds: no-vent 14.11 L (was 15.28), ideal-return 50.21 L (was 52.55), 2 psig return 102.11 L (was 109.19)
+- Replaced ~26 hard-coded values throughout `failure-mechanism.qmd` with `{{< var >}}` shortcodes
+- Shortcodes work in prose, tables, captions, alt text; literal values retained in `$$` display equations (shortcodes don't resolve inside LaTeX math)
 
-### Key modeling assumptions documented in notebook
-- Valve stays open once cracked (conservative — field experience shows unreliable reseat)
-- Venting is instantaneous (equilibrium calculation from EOS — no flow rate needed because the molar mass, T, V, and target P fully determine post-vent mass)
-- Flow rate modeling explicitly not pursued: valve behavior is not reliably characterizable without extensive testing, and history shows it is not repeatable
-- Bag is ideal passive compliance (zero spring force, hard stops at 0 and V_bag_max)
-- Cargo hold temperature is a "debatable baseline" of 20°C
+### Review findings resolved
+- **C1 (Critical):** Cruise pressure corrected to 75,262 Pa; all thresholds recalculated and propagated via `_variables.yml`
+- **C2 (Critical):** @tbl-cases caption now states T_cargo = 20 °C and P_cruise; source identified as MATLAB model
+- **M1 (Major):** FND-SH-007 narrowed to 2 psig case only; FND-SH-008 updated accordingly
+- **M2 (Major):** @tbl-max-safe-volume caption clarified as "30 °C (sweep limit)" with note about 40 °C follow-up
+- **M3 (Major):** Added callout-note explaining T_tarmac vs T_cargo distinction after @tbl-transport-envelope
 
-## Known issues / next steps
+### Render verified
+- `quarto render --to docx` succeeds with no warnings
+- All shortcodes resolve correctly; no old values (15.28, 52.55, 109.19, 0.7630) remain in output
 
-1. **Equation cross-references** — @eq-no-vent and @eq-return-threshold produce Quarto warnings. The `{#eq-xxx}` labels may need to be on the same line as the `$$` delimiter.
-2. **PDF and Word rendering** — not yet tested. See export commands below.
-3. **Abstract** — may need updating to reflect the new vent-removal conclusion (currently only describes the failure mechanism, not the solution).
-4. **Old `-executed` notebook** — stale file at `output/jupyter-notebook/nitrogen-shipping-coolprop-cycle-executed.ipynb` (15°C results). Can be deleted.
-5. **Prose review** — Mike will review for accuracy, tone, completeness. Some original content uses older writing style.
-6. **`compliance-volume-design.qmd`** — still a 27-line stub. Design-response study goes here eventually.
-7. **Simscape Gas model** — previously attempted, did not work. The simulink-block-hunter and simulink-model-builder agents are available if Mike wants to try again.
+### Codex reviewer test
+- Re-ran `openai_reasoned_review.py` against updated document (results pending)
+
+## What was accomplished (2026-04-15, session 2)
+
+### Findings inserted
+- FND-SH-006 through FND-SH-014 written into `@sec-findings` with div anchors and dispositions
+- Valve non-reseat chain (006→007→008), multi-leg ratcheting (009–010), handling breathing (011), per-leg overpressure bound (012), seal leak gap (013), alternative-valve ineffectiveness (014)
+
+### Closure table updated
+- Full-assembly leak-down test at 5–6 psig (for FND-SH-013)
+- Valve reseat specification document (for FND-SH-006)
+
+### Conclusions extended
+- Items 6–10 added referencing new findings; bag-vent-removal renumbered to 11
+
+### Editorial fixes (all 9 from prior handoff)
+1. Abstract rewritten with full arc: safe baseline → valve non-reseat → multi-leg gaps → vent removal
+2. Pressure standardized to 75.26 kPa in @tbl-transport-envelope (was ~76.3 kPa)
+3. Two 35 L rows added to @tbl-cases (ideal vent and 2 psig, values interpolated ~)
+4. fig-three-regimes intro updated — describes safe baseline, forward-references failure cases
+5. @sec-actual-mechanism intro updated similarly
+6. Perfect-valve assumption flagged as known non-conservative in @sec-review-assumptions
+7. Date pinned to 2026-04-15
+8. Callout note added about sweep range (5–30°C) vs shipping spec (10–40°C)
+9. All "round-trip" replaced with "shipping cycle" (0 remaining)
+
+### Generated file naming
+- All files in `generated/` prefixed with `PIR-SH-001_` per artifact naming convention
+- References in qmd updated to match
+- Convention saved to memory (`feedback_artifact_naming.md`)
+
+### Bag volume sensitivity analysis (new section)
+- New subsection `@sec-bag-sensitivity` added after @tbl-cases
+- `@tbl-bag-sweep`: 44-row sweep of bag volume (5–30 L) × fill % (0–75%) for both vent assumptions
+- `@fig-bag-sensitivity`: contour plot with ΔP=0 failure boundary and as-built point starred
+- Key finding: minimum bag for safe return at 35 L is ~13 L (ideal vent); fill % doesn't affect the safe/fail boundary; 2 psig valve is safe at every bag volume tested
+
+### .gitignore updated
+- Word (.docx) files in project `_output/` dirs are now tracked (not ignored)
+- HTML and PDF remain ignored
+
+### Technical review run
+- Used `technical-reviewer` agent on the full document
+- Identified 2 critical, 3 major, 5 minor findings (see "Next Session Action" above)
+
+## Open review findings (not yet addressed)
+
+| ID | Severity | Issue | Status |
+|---|---|---|---|
+| C1 | Critical | Cruise pressure 76,300 Pa vs correct ISA 75,262 Pa — thresholds overstated by 1–7 L | Next session |
+| C2 | Critical | @tbl-cases MATLAB values ≠ Python simulation; T_cargo unstated | Next session |
+| M1 | Major | FND-SH-007 overclaims "both assumptions" — ideal vent fails at 120L/40°C | Next session |
+| M2 | Major | @tbl-max-safe-volume at 30°C, not spec limit 40°C | Next session |
+| M3 | Major | T_tarmac vs T_cargo distinction unstated | Next session |
+| m1 | Minor | fig-three-regimes doesn't state T_cargo | Can fix with M3 |
+| m2 | Minor | FND-SH-006 reseat citation pending | Waiting on Mike |
+| m3 | Minor | Ideal gas in equations vs CoolProp in simulation | Note only |
+| m4 | Minor | MATLAB static figures vs Python simulation consistency | Addressed by C2 |
+| m5 | Minor | Finding div anchors aren't Quarto cross-refs | Stylistic choice |
+
+## Quarto variables (not yet implemented)
+
+Plan: define key values in YAML `params` or `variables` block, reference via `{{< var >}}` shortcodes. Candidates:
+
+- `v_fixed`: 35 (L)
+- `p_cruise_pa`: 75262 (Pa)
+- `threshold_no_vent`: recalculated (L)
+- `threshold_ideal_return`: recalculated (L)
+- `threshold_2psi_return`: recalculated (L)
+- `p_crack_2psi_pa`: 13790 (Pa)
+- `bag_volume`: 22 (L)
+
+This should be set up BEFORE fixing C1, so the recalculated values propagate automatically.
 
 ## Primary working files
+
 | File | Purpose |
 |---|---|
 | `projects/shipping/failure-mechanism.qmd` | Main Quarto document (source of truth) |
-| `projects/shipping/_output/failure-mechanism.html` | Rendered HTML (current) |
-| `output/jupyter-notebook/nitrogen-shipping-coolprop-cycle.ipynb` | Jupyter notebook (executed, 20°C baseline, with widgets) |
-| `_shared/ai_docs/coolprop-reference.md` | CoolProp API reference for thermo-engineer agent |
-| `_shared/ai_docs/thermo-engineering-reference.md` | ht/fluids/thermo cheat-sheet |
-| `.claude/agents/thermo-engineer.md` | Merged thermo-engineer agent definition |
-| `pyproject.toml` | Workspace dependency declaration |
-
-## Computation sources
-- MATLAB analysis: `D:/matlab-mcp/docs/shipping/nitrogen_shipping_report_analysis.m`
-- MATLAB derivations: `D:/matlab-mcp/docs/shipping/nitrogen_shipping_derivation.md`
-- Generated MATLAB artifacts: `D:/matlab-mcp/docs/shipping/generated/` (pressure plots, sweep, threshold tables)
-- Python notebook: `output/jupyter-notebook/nitrogen-shipping-coolprop-cycle.ipynb` (CoolProp-based, parametric sweep, interactive)
-
-## Render / export commands
-```bash
-cd D:/Quarto/projects/shipping
-export QUARTO_PYTHON=/d/Quarto/.venv/Scripts/python.exe
-
-# HTML (tested, works)
-quarto render failure-mechanism.qmd --to html
-
-# PDF (requires LaTeX — uses preamble from _shared/_metadata.yml)
-quarto render failure-mechanism.qmd --to pdf
-
-# Microsoft Word
-quarto render failure-mechanism.qmd --to docx
-```
-
-## Writing constraints (unchanged)
-- Active voice, present tense, impersonal tone
-- Lead the reader through the investigation step by step
-- The investigation report establishes the failure mechanism AND now argues for removing the bag vent
-- Design solutions (other than vent removal) belong in `compliance-volume-design.qmd`
+| `projects/shipping/_output/failure-mechanism.docx` | Latest Word render (tracked in git) |
+| `output/jupyter-notebook/nitrogen-shipping-coolprop-cycle.ipynb` | CoolProp notebook (35 L baseline) |
+| `projects/shipping/Reviews/` | Review artifacts |
+| `projects/shipping/SESSION_HANDOFF.md` | This file |

@@ -2,26 +2,28 @@
 title: "Shipping Failure Mode of the Nitrogen-Purged Optical Assembly"
 subtitle: "Return-Leg Underpressure Following Irreversible Mass Loss"
 author: "Opto-Mechanical Engineering Group"
-date: today
+date: 2026-04-15
 date-format: "MMMM D, YYYY"
 abstract: |
   The nitrogen-purged optical assembly fails by return-leg underpressure
-  on the low-pressure side of the shipping cycle, not by outbound
-  overpressure on the high-pressure side. The current foil breather bag
-  and outward-only check valve cannot prevent this failure because the bag
-  is a temporary volume buffer rather than a mass reservoir, and the
-  outward-only valve is structurally incapable of operating during the
-  sub-atmospheric phase. Once the bag saturates and nitrogen vents during
-  ascent and heating, the retained nitrogen inventory is permanently
-  reduced. On descent and cooling, the bag collapses and the remaining gas
-  is insufficient to maintain ambient pressure in the rigid connected
-  volume. Distributed seals throughout the manifolded assembly then become
-  inward leakage paths, and atmospheric contamination is thermodynamically
-  favored. Confirmed field failures are the observed consequence of this
-  mechanism. Closed-form thresholds and a MATLAB quasi-static round-trip
-  model establish the design envelope. The single critical unknown is
-  $V_{fixed}$, the total rigid nitrogen volume of the interconnected
-  modules, tubing, and manifolds.
+  after irreversible nitrogen mass loss during air transport, not by
+  outbound overpressure. Closed-form thresholds and a quasi-static
+  shipping-cycle model establish that the conservative as-built rigid
+  volume ($V_{fixed} \approx 35\;\text{L}$) with the 2 psig Swagelok
+  check valve is nominally safe under single-flight ideal assumptions:
+  the bag absorbs the full excursion without venting and the return-leg
+  pressure remains nonnegative. However, the as-built valve requires up
+  to 2 psig reverse differential to reseat, and the model produces less
+  than 2 psig backpressure across the full operating envelope. The valve
+  therefore remains open after first cracking. Multi-leg shipments
+  compound mass loss beyond the single-flight prediction, and handling
+  of the unsupported foil bag drives additional gas exchange through the
+  unseated valve. These mechanisms — valve non-reseat, multi-leg
+  ratcheting, and handling-driven breathing — are not captured by the
+  single-flight model and represent non-conservative gaps. Removal or
+  permanent sealing of the bag vent eliminates the irreversible mass-loss
+  pathway; the existing 0.5 bar circuit relief provides sufficient
+  overpressure protection at any volume and any number of flight legs.
 keywords:
   - nitrogen purge
   - shipping qualification
@@ -37,9 +39,7 @@ The shipping concept for the nitrogen-purged optical assembly relies on a foil c
 
 The actual failure is **return-leg underpressure** following **irreversible nitrogen mass loss**. During ascent and heating, the internal nitrogen expands. If the bag saturates before reaching its maximum volume, internal pressure rises and the outward-only valve vents nitrogen to ambient. This is a one-way thermodynamic event: the retained mole inventory is permanently reduced. On descent and cooling the bag contracts, and if the bag fully collapses while the remaining nitrogen is insufficient to fill the rigid connected volume at the return temperature, the internal pressure falls below ambient. The distributed seal network of the manifolded assembly is positive-pressure energized. It is not qualified for sub-atmospheric internal conditions. Atmospheric ingress through any joint or seal is then thermodynamically favored.
 
-The mechanism does not depend on valve back-leakage or bag leakage. Even an ideal outward-only valve and an ideal zero-stiffness bag exhibit this failure once the rigid connected volume exceeds a critical threshold. Two closed-form expressions govern the design space: the largest rigid volume that avoids any outbound venting in Eq. @eq-no-vent, and the largest rigid volume that still returns nonnegative after venting in Eq. @eq-return-threshold. For the present 22 L bag and the standard ICAO/FAA shipping envelope, these thresholds are approximately **15.28 L** and **52.55 L** for ideal outward venting. The actual rigid nitrogen volume of the production hardware, $V_{fixed}$, is unmeasured. Where $V_{fixed}$ falls relative to those thresholds determines whether the present concept can succeed.
-
-The required next action is to measure $V_{fixed}$ and to evaluate the present concept against @eq-no-vent and @eq-return-threshold rather than against an outbound peak-pressure criterion alone.
+The mechanism does not depend on valve back-leakage or bag leakage. Even an ideal outward-only valve and an ideal zero-stiffness bag exhibit this failure once the rigid connected volume exceeds a critical threshold. Two closed-form expressions govern the design space: the largest rigid volume that avoids any outbound venting in Eq. @eq-no-vent, and the largest rigid volume that still returns nonnegative after venting in Eq. @eq-return-threshold. For the present 22 L bag and the standard ICAO/FAA shipping envelope, these thresholds are approximately **{{< var no-vent-threshold-l >}} L** and **{{< var ideal-return-threshold-l >}} L** for ideal outward venting. A conservative estimate places the rigid nitrogen volume of the production hardware at $V_{fixed} \approx$ {{< var v-fixed-l >}} L. At {{< var v-fixed-l >}} L the system lies above the no-vent threshold and will vent on the outbound leg, but remains below the nonnegative-return threshold under both the ideal-vent and 2 psig screening cases (@tbl-thresholds). A traceable volume measurement is required to confirm this estimate and formally close **FND-SH-003**.
 
 A subsequent analysis in @sec-upper-bound derives an analytical upper bound on the maximum overpressure that can develop during any single-flight cycle, and demonstrates that the existing 0.5 bar circuit relief valve cannot open under physically realizable cargo temperatures. Under the validity conditions in @sec-validity-conditions, that bound supports removing the bag vent as a way to eliminate the irreversible mass-loss pathway. The explicit decision framing for that recommendation appears in @sec-decision-status.
 
@@ -53,29 +53,300 @@ During shipping, the continuous purge is unavailable. The assembly is sealed at 
 
 1.  **Foil compliance bag** -- a CALDRY 1500 multilayer foil reservoir that can expand and contract between approximately zero and 22 L. The foil is geometrically compliant but not elastically compliant: it unfolds and refolds between hard geometric limits with negligible restoring force across its usable range.
 
-2.  **Outward-only check/vent valve** -- permits nitrogen to escape if the internal pressure exceeds ambient by the valve's cracking threshold, but does not admit ambient flow inward. A separate 0.5 bar gauge safety relief valve remains on the main assembly per the European pressure equipment directive.
+2.  **Outward-only check/vent valve** -- a Swagelok 6L-CW4VR4-P high-purity welded check valve. It permits nitrogen to escape if the internal pressure exceeds ambient by the valve's cracking threshold, but does not admit ambient flow inward. A separate 0.5 bar gauge safety relief valve remains on the main assembly per the European pressure equipment directive.
 
-@fig-three-regimes shows the intended operating sequence across the three regimes of the round-trip cycle. The figure is the visual anchor for the failure mechanism developed in @sec-actual-mechanism.
+@tbl-vent-valve lists the relevant specifications for the breather-path check valve.
 
-![Pressure-time regimes of the manifolded nitrogen shipping system. Top: ambient and internal pressure during the four flight phases. Bottom: schematic state of the optical modules and breather bag at each regime. Regime 1 -- bag absorbs expansion and internal pressure tracks ambient. Regime 2 -- bag reaches maximum volume and the outward-only valve vents nitrogen. Regime 3 -- return leg with bag fully collapsed and internal pressure below ambient.](figures/three-regimes.jpg){#fig-three-regimes fig-alt="Diagram showing pressure versus time across four flight phases with internal nitrogen pressure overlaid on ambient pressure. Below the curves are three schematic illustrations of an optical module with a breather bag attached, one for each failure regime. In Regime 1 the bag is partially inflated and internal pressure equals ambient. In Regime 2 the bag is fully inflated and nitrogen vents outward. In Regime 3 the bag is fully collapsed and arrows point inward at the seal locations as ambient air is drawn in."}
+::: {#tbl-vent-valve tbl-colwidths="[40,60]"}
+| Parameter | Value |
+|:---------------------------|:----------------------------------------------|
+| Part number | Swagelok 6L-CW4VR4-P |
+| Description | 316L SS high-purity welded check valve, SC-01 cleaned |
+| Cracking pressure | 2 psig (0.14 bar) |
+| Flow coefficient $C_v$ | 0.7 |
+| Connections | 1/4 in. integral male VCR (inlet and outlet) |
+| Seal material | Fluorocarbon FKM |
+| Wetted surface finish | Ra 8 $\mu$in (0.20 $\mu$m), electropolished |
+| Pressure rating | 3000 psig at 100 °F (206 bar at 37 °C) |
+
+Breather-path check valve specifications. The 2 psig cracking pressure is the threshold used in the "vent threshold 2 psig" screening cases in @tbl-thresholds.
+:::
+
+@fig-three-regimes shows the baseline shipping cycle for the estimated 35 L rigid volume with the as-built 2 psig valve. Under these parameters the bag absorbs the full excursion without venting and no harmful pressure differential develops — the safe baseline. @fig-ideal-vent-cycle in @sec-actual-mechanism shows how the failure sequence emerges at larger rigid volumes or lower vent thresholds.
+
+```{python}
+#| label: fig-three-regimes
+#| fig-cap: "Two-leg shipping flight cycle for the estimated 35 L rigid volume with the as-built 2 psig Swagelok valve at nominal conditions ($T_{cargo} = 20\\;\\text{°C}$, $T_{tarmac} = 35\\;\\text{°C}$; the shipping specification permits $T_{cargo}$ up to 40 °C). Top: cabin altitude profile showing the two flight legs with a ground turnaround. Middle: ambient and internal pressure — the curves overlap throughout, confirming the bag absorbs the full excursion without venting. Bottom: bag volume approaches but does not exceed the 22 L saturation limit. Compare with @fig-ideal-vent-cycle, which shows the failure sequence at larger rigid volumes."
+#| fig-alt: "Three-panel time-series plot. Top panel shows equivalent cabin altitude versus time, rising to 8000 feet during two flight legs with a ground turnaround between them. Middle panel shows ambient pressure (dashed) and internal pressure (solid) versus time; the two curves overlap almost perfectly, indicating no harmful pressure differential develops. Bottom panel shows bag volume versus time, rising from 11 liters toward the 22-liter saturation limit during cruise and contracting after landing. Vertical lines separate ten flight phases, each labeled at the top of the figure."
+#| echo: false
+
+import os
+_tinytex = os.path.join(os.environ.get('APPDATA', ''), 'TinyTeX', 'bin', 'windows')
+if os.path.isdir(_tinytex):
+    os.environ['PATH'] = _tinytex + os.pathsep + os.environ.get('PATH', '')
+
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+import scienceplots  # noqa: F401
+import CoolProp
+import CoolProp.CoolProp as CP
+
+# ---------------------------------------------------------------------------
+# Constants and seal-up
+# ---------------------------------------------------------------------------
+N2_M = 28.0134e-3
+T_SEAL_K = 293.15
+P_SEAL_PA = 101325.0
+V_BAG_INIT_L = 11.0
+V_BAG_MAX_L = 22.0
+
+def isa_pressure_Pa(alt_ft):
+    alt_m = alt_ft * 0.3048
+    if alt_m < 11000:
+        T = 288.15 - 0.0065 * alt_m
+        return 101325.0 * (T / 288.15) ** 5.2559
+    else:
+        return 22632.1 * np.exp(-0.00015769 * (alt_m - 11000))
+
+def alt_from_pressure(P_Pa):
+    """Invert ISA below 11 km to get altitude in feet from pressure."""
+    T = 288.15 * (P_Pa / 101325.0) ** (1.0 / 5.2559)
+    alt_m = (288.15 - T) / 0.0065
+    return alt_m / 0.3048
+
+def build_profile(T_cargo_C, T_tarmac_C=35.0, dt_min=2):
+    P_sea = P_SEAL_PA
+    P_cruise = isa_pressure_Pa(8000)
+    T_seal = T_SEAL_K
+    T_cargo = T_cargo_C + 273.15
+    T_tarmac = T_tarmac_C + 273.15
+    segments = [
+        (0.0,  1.0,  T_seal,   T_seal,   P_sea,    P_sea),
+        (1.0,  2.0,  T_seal,   T_tarmac, P_sea,    P_sea),
+        (2.0,  2.5,  T_tarmac, T_cargo,  P_sea,    P_cruise),
+        (2.5,  6.0,  T_cargo,  T_cargo,  P_cruise, P_cruise),
+        (6.0,  6.5,  T_cargo,  T_tarmac, P_cruise, P_sea),
+        (6.5,  8.0,  T_tarmac, T_tarmac, P_sea,    P_sea),
+        (8.0,  8.5,  T_tarmac, T_cargo,  P_sea,    P_cruise),
+        (8.5,  12.0, T_cargo,  T_cargo,  P_cruise, P_cruise),
+        (12.0, 12.5, T_cargo,  T_seal,   P_cruise, P_sea),
+    ]
+    t_end = segments[-1][1] + 1.0
+    dt_hr = dt_min / 60.0
+    t_hr = np.arange(0.0, t_end + dt_hr / 2, dt_hr)
+    P_amb = np.full_like(t_hr, P_sea)
+    T_gas = np.full_like(t_hr, T_seal)
+    for t0, t1, T_start, T_end, P_start, P_end in segments:
+        mask = (t_hr >= t0) & (t_hr <= t1)
+        frac = np.where(t1 > t0, (t_hr[mask] - t0) / (t1 - t0), 0.0)
+        P_amb[mask] = P_start + frac * (P_end - P_start)
+        T_gas[mask] = T_start + frac * (T_end - T_start)
+    mask = t_hr > segments[-1][1]
+    P_amb[mask] = P_sea
+    T_gas[mask] = T_seal
+    return t_hr, P_amb, T_gas
+
+def simulate_cycle(V_fixed_L, T_cargo_C, P_crack_Pa, T_tarmac_C=35.0):
+    t_hr, P_amb, T_gas = build_profile(T_cargo_C, T_tarmac_C)
+    V_fixed = V_fixed_L * 1e-3
+    V_bag_init = V_BAG_INIT_L * 1e-3
+    V_bag_max = V_BAG_MAX_L * 1e-3
+    AS = CoolProp.AbstractState("HEOS", "Nitrogen")
+    AS.update(CoolProp.PT_INPUTS, P_amb[0], T_gas[0])
+    mass_kg = AS.rhomass() * (V_fixed + V_bag_init)
+    N = len(t_hr)
+    P_int = np.zeros(N)
+    V_bag = np.zeros(N)
+    for i in range(N):
+        pa, T = P_amb[i], T_gas[i]
+        AS.update(CoolProp.PT_INPUTS, pa, T)
+        V_req = mass_kg / AS.rhomass()
+        V_bag_req = V_req - V_fixed
+        if 0.0 <= V_bag_req <= V_bag_max:
+            P_int[i] = pa
+            V_bag[i] = V_bag_req * 1e3
+        elif V_bag_req > V_bag_max:
+            rho_trial = mass_kg / (V_fixed + V_bag_max)
+            AS.update(CoolProp.DmassT_INPUTS, rho_trial, T)
+            P_trial = AS.p()
+            P_vent_abs = pa + P_crack_Pa
+            if P_trial > P_vent_abs:
+                AS.update(CoolProp.PT_INPUTS, P_vent_abs, T)
+                mass_kg = AS.rhomass() * (V_fixed + V_bag_max)
+                P_int[i] = P_vent_abs
+            else:
+                P_int[i] = P_trial
+            V_bag[i] = V_bag_max * 1e3
+        else:
+            V_bag[i] = 0.0
+            AS.update(CoolProp.DmassT_INPUTS, mass_kg / V_fixed, T)
+            P_int[i] = AS.p()
+    return t_hr, P_amb, P_int, V_bag
+
+# ---------------------------------------------------------------------------
+# Run the 35 L case with 2 psig Swagelok valve (as-built baseline)
+# ---------------------------------------------------------------------------
+PSI_TO_PA = 6894.757
+t, P_amb, P_int, V_bag = simulate_cycle(35.0, 20.0, 2.0 * PSI_TO_PA)
+
+P_amb_kPa = P_amb / 1e3
+P_int_kPa = P_int / 1e3
+dP_kPa = (P_int - P_amb) / 1e3
+
+# Derive altitude profile from ambient pressure
+alt_ft = np.array([alt_from_pressure(p) for p in P_amb])
+
+# ---------------------------------------------------------------------------
+# Flight phase definitions
+# ---------------------------------------------------------------------------
+phases = [
+    (0.0,  1.0,  "Seal-up"),
+    (1.0,  2.0,  "Tarmac\nhold"),
+    (2.0,  2.5,  "Climb"),
+    (2.5,  6.0,  "Cruise\n(outbound)"),
+    (6.0,  6.5,  "Descent"),
+    (6.5,  8.0,  "Ground\nturn"),
+    (8.0,  8.5,  "Climb"),
+    (8.5,  12.0, "Cruise\n(return)"),
+    (12.0, 12.5, "Descent"),
+    (12.5, 13.5, "Post-\nlanding"),
+]
+
+# Alternating phase colors
+phase_colors = ["#e8f4f8", "#f0f0f0"] * 5
+
+# ---------------------------------------------------------------------------
+# Plot with SciencePlots style
+# ---------------------------------------------------------------------------
+with plt.style.context(["science", "grid"]), \
+     matplotlib.rc_context({"text.usetex": True}):
+
+    fig, (ax0, ax1, ax2) = plt.subplots(
+        3, 1, figsize=(11, 8.5), sharex=True,
+        gridspec_kw={"height_ratios": [0.7, 1.0, 0.9], "hspace": 0.08},
+    )
+
+    # ── Phase shading and labels on all panels ──
+    for i, (t0, t1, lbl) in enumerate(phases):
+        c = phase_colors[i % len(phase_colors)]
+        for ax in (ax0, ax1, ax2):
+            ax.axvspan(t0, t1, color=c, alpha=0.6, zorder=0)
+        # Vertical dividers
+        if i > 0:
+            for ax in (ax0, ax1, ax2):
+                ax.axvline(t0, color="#bbbbbb", linewidth=0.6,
+                           linestyle="-", zorder=1)
+        # Phase labels above the top panel
+        ax0.text(
+            (t0 + t1) / 2, 1.08, lbl, transform=ax0.get_xaxis_transform(),
+            ha="center", va="bottom", fontsize=8, color="#333333",
+            fontweight="bold",
+        )
+
+    # ── Panel 1: Altitude profile ──
+    ax0.fill_between(t, 0, alt_ft, color="#D4E6F1", alpha=0.7, zorder=2)
+    ax0.plot(t, alt_ft, color="#2C3E50", linewidth=1.8, zorder=3)
+    ax0.set_ylabel("Cabin altitude (ft)", fontsize=10)
+    ax0.set_ylim(-200, 9500)
+    ax0.set_yticks([0, 2000, 4000, 6000, 8000])
+    ax0.text(
+        4.25, 7200, "8,000 ft (FAA limit)", fontsize=8, color="#2C3E50",
+        ha="center", style="italic",
+    )
+
+    # ── Panel 2: Pressure traces ──
+    ax1.plot(t, P_amb_kPa, "--", color="#7F8C8D", linewidth=1.5,
+             label="$P_{amb}$ (ambient)", zorder=3)
+    ax1.plot(t, P_int_kPa, "-", color="#2471A3", linewidth=2.2,
+             label="$P_{int}$ (internal)", zorder=4)
+    ax1.set_ylabel("Pressure (kPa)", fontsize=10)
+    ax1.legend(loc="lower left", fontsize=9, framealpha=0.9)
+
+    # Min ΔP annotation
+    i_min = np.argmin(dP_kPa)
+    min_dP = dP_kPa[i_min]
+    ax1.annotate(
+        f"min $\\Delta P$ = {min_dP:+.2f} kPa\n(no underpressure)",
+        xy=(t[i_min], P_int_kPa[i_min]),
+        xytext=(t[i_min] + 1.5, P_int_kPa[i_min] - 4.5),
+        fontsize=8.5, color="#1A8754",
+        arrowprops=dict(arrowstyle="-|>", color="#1A8754", lw=1.5),
+        bbox=dict(boxstyle="round,pad=0.4", facecolor="#E8F8F0",
+                  edgecolor="#1A8754", linewidth=1.2),
+        zorder=5,
+    )
+
+    # ── Panel 3: Bag volume ──
+    ax2.fill_between(t, 0, V_bag, color="#AED6F1", alpha=0.5, zorder=2)
+    ax2.plot(t, V_bag, "-", color="#2471A3", linewidth=2.0, zorder=3)
+    ax2.axhline(
+        V_BAG_MAX_L, color="#C0392B", linestyle="--", linewidth=1.3,
+        label=f"Saturation limit ({V_BAG_MAX_L} L)", zorder=3,
+    )
+    ax2.set_ylabel("Bag volume (L)", fontsize=10)
+    ax2.set_xlabel("Time (hr)", fontsize=10)
+    ax2.set_ylim(-0.5, V_BAG_MAX_L + 4)
+    ax2.legend(loc="upper right", fontsize=9, framealpha=0.9)
+
+    # Peak bag annotation
+    i_peak = np.argmax(V_bag)
+    ax2.annotate(
+        f"peak {V_bag[i_peak]:.1f} L\n({V_bag[i_peak]/V_BAG_MAX_L*100:.0f}\\% of limit)",
+        xy=(t[i_peak], V_bag[i_peak]),
+        xytext=(t[i_peak] + 1.8, V_bag[i_peak] + 3.0),
+        fontsize=8.5, color="#2471A3",
+        arrowprops=dict(arrowstyle="-|>", color="#2471A3", lw=1.3),
+        bbox=dict(boxstyle="round,pad=0.4", facecolor="#EBF5FB",
+                  edgecolor="#2471A3", linewidth=1.0),
+        zorder=5,
+    )
+
+    # Suptitle
+    fig.suptitle(
+        "$V_{fixed}$ = 35 L,  $P_{crack}$ = 2 psig  (Swagelok 6L-CW4VR4-P)",
+        fontsize=12, fontweight="bold", y=0.98,
+    )
+
+    plt.tight_layout(rect=[0, 0, 1, 0.96])
+    plt.show()
+```
 
 # Transport Envelope {#sec-envelope}
 
-The transport state space is bounded by the shipping specification and by the standard atmosphere model used for FAA cabin altitude requirements. The relevant extremes are summarized in @tbl-transport-envelope.
+@tbl-shipping-spec summarizes the official shipping and storage requirements that bound the transport design space. The pressure-gradient requirement is satisfied by compliance with standard commercial air-freight cabin-altitude limits.
+
+::: {#tbl-shipping-spec tbl-colwidths="[35,35,30]"}
+| Requirement | Value | Source |
+|:----------------------|:------------------------|:------------------------|
+| Temperature range | 10 °C to 40 °C | Shipping specification |
+| Maximum pressure gradient | Aerial transport | Shipping specification |
+| Maximum acceleration | 10 g | Shipping specification |
+
+Official shipping and storage requirements for the nitrogen-purged optical assembly.
+:::
+
+The transport state space derived from these requirements and the applicable regulatory limits is summarized in @tbl-transport-envelope.
 
 ::: {#tbl-transport-envelope tbl-colwidths="[35,30,35]"}
 | Parameter | Value | Basis |
 |:----------------------|:------------------------|:------------------------|
-| Temperature range | 20 C to 40 C | Shipping specification |
+| Temperature range | 10 °C to 40 °C | Shipping specification |
 | Maximum cabin altitude | \~8,000 ft (2,440 m) | FAA 14 CFR 25.841 |
-| Ambient pressure at cabin altitude | \~0.753 atm (76.3 kPa) | ICAO standard atmosphere |
+| Ambient pressure at cabin altitude | 75.26 kPa (0.743 atm) | ICAO standard atmosphere at 8000 ft |
 | Internal gas | Diatomic nitrogen (N2), ultra-pure | Purge specification |
 | Maximum shipping duration | 30 to 60 days | Operational requirement |
 | Bag maximum volume $V_{bag,max}$ | 22 L | CALDRY 1500 measured capacity |
 | Initial bag fill $V_{bag,0}$ | \~11 L (nominal 50 percent fill) | Documented practice; uncontrolled |
-| Rigid system volume $V_{fixed}$ | **unmeasured** | Total of modules + tubing + manifolds |
+| Rigid system volume $V_{fixed}$ | \~35 L (conservative estimate) | Total of modules + tubing + manifolds |
 
-Transport envelope and key system parameters. The rigid system volume $V_{fixed}$ is the single most important unknown in the analysis and is the subject of @sec-critical-unknowns.
+Transport envelope and key system parameters. The rigid system volume $V_{fixed}$ is a conservative estimate pending traceable measurement (@sec-critical-unknowns).
+:::
+
+::: callout-note
+## Temperature nomenclature
+
+Two distinct temperatures appear throughout this analysis. $T_{tarmac}$ (default 35 °C) is the ground-level ambient air temperature during tarmac hold; it sets the starting condition for the simulation flight profile. $T_{cargo}$ is the cargo compartment air temperature, which may differ from $T_{tarmac}$ due to solar loading, ramp soak, or climate-controlled cargo facilities. The closed-form screening equations use $T_{hot} = 40\;\text{°C}$ (313.15 K) as the worst-case upper bound on cargo temperature per the shipping specification. The quasi-static simulation profile uses $T_{tarmac} = 35\;\text{°C}$ for the ground phase and $T_{cargo} = 20\;\text{°C}$ during cruise unless otherwise stated.
 :::
 
 The 30 to 60 day shipping duration is significant. Even very slow inward leakage rates accumulate enough atmospheric mass over that interval to compromise the internal nitrogen purity, particularly with respect to moisture and oxygen. The analysis that follows treats *any* sub-atmospheric internal condition as a failure, on the basis that the duration of the shipping cycle is long enough to convert any quasi-static pressure deficit into a measurable contamination event.
@@ -85,12 +356,12 @@ The 30 to 60 day shipping duration is significant. Even very slow inward leakage
 ::: callout-important
 ## Confirmed field failures motivate this analysis
 
-Optical assemblies sealed and purged with ultra-pure nitrogen prior to shipment have returned from air transport with confirmed **moisture ingress** and **biological contamination** inside the sealed modules. Disassembly, inspection, cleaning, and re-qualification were required.
+Optical assemblies sealed and purged with ultra-pure nitrogen prior to shipment have returned from air transport with confirmed **moisture ingress** and **biological contamination** inside the sealed modules. Disassembly, inspection, cleaning, and re-qualification were required. Evidence is documented in internal field reports.
 
 The contamination is not present at seal-up, and no operational use occurs between seal-up and the post-shipment inspection. The contamination is therefore attributable to events during the transport cycle.
 :::
 
-These field failures predate the introduction of the present breather bag and check valve. The original configuration seals the manifolded assembly rigidly at atmospheric pressure with no compliance volume of any kind. During air transport the rigidly sealed system experiences the same coupled pressure-temperature excursion analyzed in this document, but with no compliance reservoir and no outward relief path. Internal pressure rises and falls with the round-trip ambient and temperature cycle. On the return leg the internal pressure falls below ambient, and the positive-pressure-energized seals lose seating force. Atmospheric ingress through the distributed seal network introduces moisture, oxygen, and particulates to the high-purity nitrogen space.
+These field failures predate the introduction of the present breather bag and check valve. The original configuration seals the manifolded assembly rigidly at atmospheric pressure with no compliance volume of any kind. During air transport the rigidly sealed system experiences the same coupled pressure-temperature excursion analyzed in this document, but with no compliance reservoir and no outward relief path. Internal pressure rises and falls with the ambient pressure and temperature cycle during air transport. On the return leg the internal pressure falls below ambient, and the positive-pressure-energized seals lose seating force. Atmospheric ingress through the distributed seal network introduces moisture, oxygen, and particulates to the high-purity nitrogen space.
 
 The breather bag and check valve concept is introduced as a passive mitigation of this observed failure. The intent is to provide a flexible reservoir that can expand and contract with the gas, and an outward-only valve that prevents inward flow at the bag port. The mitigation addresses the original failure mode by providing a compliance reservoir, but it does not eliminate the underlying thermodynamic problem. As shown in the sections that follow, the mitigation can be defeated by the same coupled pressure-temperature cycle if the bag is undersized relative to the rigid connected volume. Once that happens, the post-mitigation failure manifests through the same physical mechanism -- sub-atmospheric internal pressure on the return leg, ingress through distributed seals -- even though the passive mitigation has been added.
 
@@ -100,7 +371,7 @@ The history establishes two facts that the rest of the document relies on. First
 
 The current review path asks whether the outbound leg can exceed the allowable structural pressure of the assembly. The answer is no: the existing 0.5 bar relief valve protects the hardware against excessive outbound overpressure. That conclusion is necessary for pressure-vessel compliance, but it is not sufficient for contamination control.
 
-Any device that vents nitrogen outward can protect hardware while still making the contamination problem worse. Each vent event lowers the retained nitrogen inventory. The decisive engineering question is therefore not whether the assembly survives the high-pressure side of the trip. The decisive question is whether the assembly completes the full round-trip cycle without ever crossing below ambient pressure on the return leg. However, @sec-upper-bound demonstrates that if the bag vent is removed entirely, the 0.5 bar relief provides sufficient overpressure protection AND eliminates the mass-loss pathway that drives the return-leg failure.
+Any device that vents nitrogen outward can protect hardware while still making the contamination problem worse. Each vent event lowers the retained nitrogen inventory. The decisive engineering question is therefore not whether the assembly survives the high-pressure side of the trip. The decisive question is whether the assembly completes the full shipping cycle without ever crossing below ambient pressure on the return leg. However, @sec-upper-bound demonstrates that if the bag vent is removed entirely, the 0.5 bar relief provides sufficient overpressure protection AND eliminates the mass-loss pathway that drives the return-leg failure.
 
 ::: callout-note
 ## The structural criterion and the contamination criterion are different
@@ -110,7 +381,7 @@ Structural protection asks whether internal pressure stays below an allowable li
 
 # Actual Failure Mechanism {#sec-actual-mechanism}
 
-The governing mechanism has three regimes. @fig-three-regimes shows the logic schematically, and @fig-ideal-vent-cycle shows the same behavior in the quasi-static model.
+The governing mechanism has three regimes. @fig-three-regimes shows the safe baseline (35 L, 2 psig valve) where the bag absorbs the full excursion. @fig-ideal-vent-cycle shows the failure sequence that emerges when the rigid volume exceeds the nonnegative-return threshold or the vent cracking pressure is low enough to permit outbound venting.
 
 ## Regime 1: Bag Absorbs Expansion
 
@@ -125,11 +396,11 @@ Once the bag reaches maximum volume, the system has no remaining geometric compl
 During descent and cooling, ambient pressure rises and gas temperature falls. The bag collapses. If the bag reaches zero volume before the remaining nitrogen inventory can support ambient pressure in the rigid connected volume, internal pressure falls below ambient. Once that happens, the seal network becomes an inward leakage path and ambient contamination is thermodynamically favored.
 
 ::: {#fig-ideal-vent-cycle layout-ncol="2"}
-![](generated/quasistatic_pressure_examples_ideal_vent.png){fig-alt="Pressure versus time for 12 L, 30 L, and 60 L rigid connected volumes under ideal outward venting. The 12 L case tracks ambient throughout. The 30 L case reaches the vent threshold but remains nonnegative on return. The 60 L case drops below ambient after descent begins."}
+![](generated/PIR-SH-001_quasistatic_pressure_examples_ideal_vent.png){fig-alt="Pressure versus time for 12 L, 30 L, and 60 L rigid connected volumes under ideal outward venting. The 12 L case tracks ambient throughout. The 30 L case reaches the vent threshold but remains nonnegative on return. The 60 L case drops below ambient after descent begins."}
 
-![](generated/quasistatic_bag_examples_ideal_vent.png){fig-alt="Bag volume versus time for 12 L, 30 L, and 60 L rigid connected volumes under ideal outward venting. The 12 L case stays within the bag range. The 30 L case reaches maximum bag volume and later contracts. The 60 L case reaches maximum bag volume early and collapses to zero during the return leg."}
+![](generated/PIR-SH-001_quasistatic_bag_examples_ideal_vent.png){fig-alt="Bag volume versus time for 12 L, 30 L, and 60 L rigid connected volumes under ideal outward venting. The 12 L case stays within the bag range. The 30 L case reaches maximum bag volume and later contracts. The 60 L case reaches maximum bag volume early and collapses to zero during the return leg."}
 
-Representative ideal-vent cases from the MATLAB quasi-static model. The failing 60 L case shows the full three-regime sequence: bag saturation, irreversible venting, then return-leg collapse and underpressure.
+Representative ideal-vent cases from the MATLAB quasi-static model ($T_{cargo} = 20\;\text{°C}$). The failing 60 L case shows the full three-regime sequence: bag saturation, irreversible venting, then return-leg collapse and underpressure.
 :::
 
 # Governing Model {#sec-model}
@@ -220,18 +491,18 @@ Using the present transport envelope,
 
 $$\alpha
 =
-\left(\frac{1.01325}{0.7630}\right)
+\left(\frac{1.01325}{0.75262}\right)
 \left(\frac{313.15}{293.15}\right)
-= 1.4186$$
+= 1.4381$$
 
 and
 
 $$V_{fixed}
 \le
-\frac{22 - (1.4186)(11)}{1.4186 - 1}
-= 15.28\ \mathrm{L}.$$
+\frac{22 - (1.4381)(11)}{1.4381 - 1}
+= 14.11\ \mathrm{L}.$$
 
-Any rigid connected volume above **15.28 L** must vent on the outbound leg under the ideal-vent assumption.
+Any rigid connected volume above **{{< var no-vent-threshold-l >}} L** must vent on the outbound leg under the ideal-vent assumption.
 
 ## Threshold 2: Largest Rigid Volume That Still Returns Nonnegative After Venting
 
@@ -271,34 +542,34 @@ For the nonnegative-return case under ideal venting,
 
 $$\gamma(0)
 =
-\frac{(1.01325)(313.15)}{(0.7630)(293.15)}
-= 1.4186$$
+\frac{(1.01325)(313.15)}{(0.75262)(293.15)}
+= 1.4381$$
 
 and
 
 $$V_{fixed}
 \le
-\frac{22}{1.4186 - 1}
-= 52.55\ \mathrm{L}.$$
+\frac{22}{1.4381 - 1}
+= 50.21\ \mathrm{L}.$$
 
-Under ideal outward venting, any rigid connected volume above **52.55 L** must go sub-atmospheric on the return leg.
+Under ideal outward venting, any rigid connected volume above **{{< var ideal-return-threshold-l >}} L** must go sub-atmospheric on the return leg.
 
 ::: {#tbl-thresholds tbl-colwidths="[28,18,18,18,18]"}
 | Outward vent assumption | No vent threshold | Return $\ge 0$ bar | Return $\ge +0.01$ bar | Return $\ge +0.02$ bar |
 |:--------------|--------------:|--------------:|--------------:|--------------:|
-| Ideal vent (`0 psig`) | 15.28 L | 52.55 L | 50.85 L | 49.26 L |
-| Vent threshold `2 psig` | 15.28 L | 109.19 L | 103.12 L | 97.69 L |
+| Ideal vent (`0 psig`) | {{< var no-vent-threshold-l >}} L | {{< var ideal-return-threshold-l >}} L | {{< var ideal-return-001-l >}} L | {{< var ideal-return-002-l >}} L |
+| Vent threshold `2 psig` | {{< var no-vent-threshold-l >}} L | {{< var two-psig-return-threshold-l >}} L | {{< var two-psig-return-001-l >}} L | {{< var two-psig-return-002-l >}} L |
 
-Threshold volumes from the MATLAB quasi-static screening tables. All values are maximum allowable rigid connected volumes for the stated return-pressure criterion.
+Threshold volumes from the closed-form screening equations using ISA pressure at 8000 ft ({{< var p-cruise-pa >}} Pa). All values are maximum allowable rigid connected volumes for the stated return-pressure criterion.
 :::
 
 @tbl-thresholds shows that increasing the outward vent threshold delays mass loss and increases the return-leg threshold, but it does not remove the mechanism. The failure remains a mass-inventory problem. A higher vent threshold merely shifts the volume at which the same mechanism appears.
 
-# Quasi-Static Round-Trip Results {#sec-results}
+# Quasi-Static Shipping-Cycle Results {#sec-results}
 
 @fig-min-dp-sweep is the visual anchor for the design space. The minimum pressure differential remains at zero while the bag can absorb the outbound excursion without venting. Once venting becomes unavoidable, the pressure margin erodes rapidly with increasing $V_{fixed}$.
 
-![Minimum internal-minus-ambient pressure versus rigid connected volume for the two vent assumptions evaluated in the MATLAB model. The ideal-vent case crosses below zero at 52.55 L, and the 2 psig case shifts that crossing to 109.19 L.](generated/quasistatic_min_dp_sweep.png){#fig-min-dp-sweep fig-alt="Plot of minimum internal minus ambient pressure versus rigid connected volume. The ideal-vent curve stays at zero for small volumes and then declines below zero near 52.55 liters. The 2 psig vent curve remains at zero longer and crosses below zero near 109.19 liters."}
+![Minimum internal-minus-ambient pressure versus rigid connected volume for the two vent assumptions evaluated in the MATLAB model. The ideal-vent case crosses below zero at {{< var ideal-return-threshold-l >}} L, and the 2 psig case shifts that crossing to {{< var two-psig-return-threshold-l >}} L.](generated/PIR-SH-001_quasistatic_min_dp_sweep.png){#fig-min-dp-sweep fig-alt="Plot of minimum internal minus ambient pressure versus rigid connected volume. The ideal-vent curve stays at zero for small volumes and then declines below zero near {{< var ideal-return-threshold-l >}} liters. The 2 psig vent curve remains at zero longer and crosses below zero near {{< var two-psig-return-threshold-l >}} liters."}
 
 Representative cases from the same model make the mechanism concrete.
 
@@ -307,11 +578,13 @@ Representative cases from the same model make the mechanism concrete.
 |:--------|--------:|--------:|--------:|--------:|--------:|--------:|:--------|
 | Ideal vent | 12 L | 0.00 g | n/a | n/a | n/a | 0.0000 bar | No venting, no underpressure |
 | Ideal vent | 30 L | 5.06 g | 5.67 hr | 5.67 hr | n/a | 0.0000 bar | Vents outward but returns with zero margin |
+| **Ideal vent** | **35 L** | **~7.7 g** | **~5.0 hr** | **~5.0 hr** | **n/a** | **0.0000 bar** | **As-built estimate; vents but returns nonnegative** |
 | Ideal vent | 60 L | 15.37 g | 3.58 hr | 3.58 hr | 23.08 hr | -0.0371 bar | Full failure sequence: venting, collapse, underpressure |
+| **Vent `2 psig`** | **35 L** | **0.00 g** | **~5.0 hr** | **n/a** | **n/a** | **0.0000 bar** | **As-built baseline; bag fills but does not vent** |
 | Vent `2 psig` | 30 L | 0.00 g | 5.67 hr | n/a | n/a | 0.0000 bar | Bag fills but does not vent under this profile |
 | Vent `2 psig` | 60 L | 3.20 g | 3.58 hr | 7.08 hr | n/a | 0.0000 bar | Delayed venting preserves margin in this case |
 
-Representative quasi-static cases from the MATLAB case table. Times are measured from seal-up at the start of the shipping profile.
+Representative quasi-static cases from the MATLAB model ($T_{cargo} = 20\;\text{°C}$, $P_{cruise}$ = {{< var p-cruise-pa >}} Pa). Rows marked with **~** are interpolated estimates for the as-built 35 L volume. Times are measured from seal-up at the start of the shipping profile.
 :::
 
 Two points follow directly from @tbl-cases.
@@ -319,6 +592,184 @@ Two points follow directly from @tbl-cases.
 First, the 30 L ideal-vent case already vents 5.06 g of nitrogen even though it remains nonnegative on return. That case is not robust; it has zero return-pressure margin. Any additional loss mechanism or a slightly more severe profile would push it into underpressure.
 
 Second, the 60 L ideal-vent case produces the exact sequence implicated by the field failures. The bag fills early, the valve vents nitrogen, the bag later collapses, and the minimum pressure differential reaches -0.0371 bar. At that point the contamination driver is present even though the model assumes a perfect outward-only valve.
+
+## Bag Volume Sensitivity {#sec-bag-sensitivity}
+
+The preceding results fix the bag at the as-built 22 L capacity and vary the rigid volume. A complementary question is: for the estimated $V_{fixed} = 35\;\text{L}$, how does the outcome change with bag volume and initial fill level? @tbl-bag-sweep answers this for both vent assumptions across the two-leg flight profile at $T_{cargo} = 20\;\text{°C}$.
+
+```{python}
+#| label: tbl-bag-sweep
+#| tbl-cap: "Bag volume sensitivity for V_fixed = 35 L. Each row shows the minimum return-leg pressure differential and total nitrogen mass lost for a given bag capacity, initial fill level, and vent assumption. The ideal-vent column (P_crack = 0) represents the worst-case valve; the 2 psig column represents the as-built Swagelok valve. Shaded rows indicate configurations where the return leg goes sub-atmospheric."
+#| echo: false
+
+import numpy as np
+import CoolProp
+import CoolProp.CoolProp as CP
+from IPython.display import Markdown
+
+# --- reuse model infrastructure from earlier cells ---
+T_SEAL_K = 293.15
+P_SEAL_PA = 101325.0
+
+def isa_pressure_Pa(alt_ft):
+    alt_m = alt_ft * 0.3048
+    if alt_m < 11000:
+        T = 288.15 - 0.0065 * alt_m
+        return 101325.0 * (T / 288.15) ** 5.2559
+    else:
+        return 22632.1 * np.exp(-0.00015769 * (alt_m - 11000))
+
+def build_profile(T_cargo_C, T_tarmac_C=35.0, dt_min=2):
+    P_sea = P_SEAL_PA
+    P_cruise = isa_pressure_Pa(8000)
+    T_seal = T_SEAL_K
+    T_cargo = T_cargo_C + 273.15
+    T_tarmac = T_tarmac_C + 273.15
+    segments = [
+        (0.0,  1.0,  T_seal,   T_seal,   P_sea,    P_sea),
+        (1.0,  2.0,  T_seal,   T_tarmac, P_sea,    P_sea),
+        (2.0,  2.5,  T_tarmac, T_cargo,  P_sea,    P_cruise),
+        (2.5,  6.0,  T_cargo,  T_cargo,  P_cruise, P_cruise),
+        (6.0,  6.5,  T_cargo,  T_tarmac, P_cruise, P_sea),
+        (6.5,  8.0,  T_tarmac, T_tarmac, P_sea,    P_sea),
+        (8.0,  8.5,  T_tarmac, T_cargo,  P_sea,    P_cruise),
+        (8.5,  12.0, T_cargo,  T_cargo,  P_cruise, P_cruise),
+        (12.0, 12.5, T_cargo,  T_seal,   P_cruise, P_sea),
+    ]
+    t_end = segments[-1][1] + 1.0
+    dt_hr = dt_min / 60.0
+    t_hr = np.arange(0.0, t_end + dt_hr / 2, dt_hr)
+    P_amb = np.full_like(t_hr, P_sea)
+    T_gas = np.full_like(t_hr, T_seal)
+    for t0, t1, T_start, T_end, P_start, P_end in segments:
+        mask = (t_hr >= t0) & (t_hr <= t1)
+        frac = np.where(t1 > t0, (t_hr[mask] - t0) / (t1 - t0), 0.0)
+        P_amb[mask] = P_start + frac * (P_end - P_start)
+        T_gas[mask] = T_start + frac * (T_end - T_start)
+    mask = t_hr > segments[-1][1]
+    P_amb[mask] = P_sea
+    T_gas[mask] = T_seal
+    return t_hr, P_amb, T_gas
+
+def simulate(V_fixed_L, V_bag_max_L, V_bag_init_L, T_cargo_C, P_crack_Pa):
+    t_hr, P_amb, T_gas = build_profile(T_cargo_C)
+    V_fixed = V_fixed_L * 1e-3
+    V_bag_max = V_bag_max_L * 1e-3
+    V_bag_init = V_bag_init_L * 1e-3
+    AS = CoolProp.AbstractState("HEOS", "Nitrogen")
+    AS.update(CoolProp.PT_INPUTS, P_amb[0], T_gas[0])
+    mass_kg = AS.rhomass() * (V_fixed + V_bag_init)
+    mass_init = mass_kg
+    N = len(t_hr)
+    P_int = np.zeros(N)
+    for i in range(N):
+        pa, T = P_amb[i], T_gas[i]
+        AS.update(CoolProp.PT_INPUTS, pa, T)
+        V_req = mass_kg / AS.rhomass()
+        V_bag_req = V_req - V_fixed
+        if 0.0 <= V_bag_req <= V_bag_max:
+            P_int[i] = pa
+        elif V_bag_req > V_bag_max:
+            rho_trial = mass_kg / (V_fixed + V_bag_max)
+            AS.update(CoolProp.DmassT_INPUTS, rho_trial, T)
+            P_trial = AS.p()
+            P_vent_abs = pa + P_crack_Pa
+            if P_trial > P_vent_abs:
+                AS.update(CoolProp.PT_INPUTS, P_vent_abs, T)
+                mass_kg = AS.rhomass() * (V_fixed + V_bag_max)
+                P_int[i] = P_vent_abs
+            else:
+                P_int[i] = P_trial
+        else:
+            AS.update(CoolProp.DmassT_INPUTS, mass_kg / V_fixed, T)
+            P_int[i] = AS.p()
+    dP = P_int - P_amb
+    return np.min(dP), (mass_init - mass_kg) * 1e3
+
+# --- Build the table ---
+PSI_TO_PA = 6894.757
+V_fixed = 35.0
+T_cargo = 20.0
+bag_volumes = [5, 8, 10, 12, 14, 16, 18, 20, 22, 25, 30]
+fill_pcts = [0, 25, 50, 75]
+
+rows = []
+for V_bag in bag_volumes:
+    for fp in fill_pcts:
+        V_init = V_bag * fp / 100.0
+        dP_ideal, m_ideal = simulate(V_fixed, V_bag, V_init, T_cargo, 0.0)
+        dP_2psi, m_2psi = simulate(V_fixed, V_bag, V_init, T_cargo, 2.0 * PSI_TO_PA)
+        rows.append((V_bag, fp, V_init, dP_ideal / 1e3, m_ideal, dP_2psi / 1e3, m_2psi))
+
+# Format as markdown table
+lines = []
+lines.append("| Bag (L) | Fill | Init (L) | Min ΔP | Lost (g) | Min ΔP | Lost (g) |")
+lines.append("|--------:|-----:|---------:|-------:|---------:|-------:|---------:|")
+lines.append("|         |      |          | *Ideal vent* | | *2 psig valve* | |")
+
+for V_bag, fp, V_init, dP_i, m_i, dP_2, m_2 in rows:
+    # Flag failing rows
+    flag_i = " ⚠" if dP_i < -0.5 else ""
+    flag_2 = " ⚠" if dP_2 < -0.5 else ""
+    lines.append(
+        f"| {V_bag:.0f} | {fp}% | {V_init:.1f} "
+        f"| {dP_i:+.2f} kPa{flag_i} | {m_i:.1f} "
+        f"| {dP_2:+.2f} kPa{flag_2} | {m_2:.1f} |"
+    )
+
+Markdown("\n".join(lines))
+```
+
+@tbl-bag-sweep reveals three key points about the bag sizing:
+
+1. **Fill level does not affect whether the return leg is safe.** At every bag volume, all fill percentages produce the same minimum pressure differential. Higher initial fill means more sealed nitrogen and correspondingly more venting, but the return-leg margin is set by the bag's ability to absorb the altitude-driven expansion, not by how much nitrogen it started with.
+
+2. **For the ideal vent ($P_{crack} = 0$), the minimum bag volume for a safe return at $V_{fixed} = 35\;\text{L}$ is approximately 13 L.** Below that, the bag saturates during the outbound cruise, nitrogen vents, and the return leg goes sub-atmospheric. The as-built 22 L bag provides roughly 9 L of margin above this threshold.
+
+3. **For the as-built 2 psig valve, the return leg is safe at every bag volume tested** — even a 5 L bag. The 2 psig cracking threshold is high enough that the valve never opens at $V_{fixed} = 35\;\text{L}$, regardless of bag capacity or fill level. The bag saturates (pressure builds above ambient) but never reaches the 2 psig vent threshold.
+
+@fig-bag-sensitivity shows the same data as a contour surface for the ideal-vent case, making the failure boundary visible.
+
+```{python}
+#| label: fig-bag-sensitivity
+#| fig-cap: "Minimum return-leg pressure differential versus bag volume and initial fill for V_fixed = 35 L with an ideal vent (P_crack = 0). The heavy contour marks ΔP = 0 (the failure boundary). Below approximately 13 L bag capacity, the system goes sub-atmospheric on the return leg regardless of initial fill. Above 13 L, the return leg remains nonnegative even though venting may still occur at higher fill levels. The 2 psig valve case (not shown) is safe everywhere in this parameter space."
+#| fig-alt: "Filled contour plot with bag volume on the x-axis (5 to 30 liters) and initial fill percentage on the y-axis (0 to 75 percent). Color represents the minimum return-leg pressure differential in kilopascals. A vertical boundary near 13 liters separates the red failure region on the left from the green safe region on the right. The boundary is nearly vertical, confirming that fill percentage has negligible effect on the safe-or-fail outcome."
+#| echo: false
+
+import matplotlib
+import matplotlib.pyplot as plt
+import scienceplots  # noqa: F401
+
+bag_arr = np.linspace(4, 32, 60)
+fill_arr = np.linspace(0, 80, 50)
+BAG, FILL = np.meshgrid(bag_arr, fill_arr)
+DP = np.zeros_like(BAG)
+
+for i in range(BAG.shape[0]):
+    for j in range(BAG.shape[1]):
+        vb = BAG[i, j]
+        vi = vb * FILL[i, j] / 100.0
+        dp, _ = simulate(V_fixed, vb, vi, T_cargo, 0.0)
+        DP[i, j] = dp / 1e3  # kPa
+
+with plt.style.context(["science", "grid"]):
+    fig, ax = plt.subplots(figsize=(7, 4.5))
+    levels = np.linspace(-16, 1, 35)
+    cf = ax.contourf(BAG, FILL, DP, levels=levels, cmap="RdYlGn", extend="both")
+    cb = fig.colorbar(cf, ax=ax, label=r"Min return-leg $\Delta P$ (kPa)")
+    # Zero contour (failure boundary)
+    ax.contour(BAG, FILL, DP, levels=[0.0], colors="black", linewidths=2)
+    # Mark as-built point
+    ax.plot(22, 50, "k*", markersize=14, zorder=5)
+    ax.annotate("As-built\n(22 L, 50%)", xy=(22, 50), xytext=(25, 62),
+                fontsize=9, ha="left",
+                arrowprops=dict(arrowstyle="->", color="black"))
+    ax.set_xlabel("Bag volume capacity (L)")
+    ax.set_ylabel("Initial fill (%)")
+    ax.set_title(r"$V_{fixed} = 35\;\mathrm{L}$, ideal vent ($P_{crack} = 0$), $T_{cargo} = 20\;^\circ\mathrm{C}$")
+    fig.tight_layout()
+    plt.show()
+```
 
 # Upper Bound on Overpressure {#sec-upper-bound}
 
@@ -399,7 +850,7 @@ from IPython.display import Markdown
 # Seal-up conditions
 T_seal_K = 293.15        # 20 °C
 P_seal_Pa = 101325.0     # 1 atm
-P_amb_cruise_Pa = 75263.0  # 8000 ft cabin altitude
+P_amb_cruise_Pa = 75262.0  # 8000 ft cabin altitude (ISA)
 
 # Density at seal-up from the full EOS
 rho_seal = CP.PropsSI("D", "T", T_seal_K, "P", P_seal_Pa, "Nitrogen")
@@ -438,7 +889,7 @@ The deviation between ideal-gas and real-gas pressures is less than 0.03 % acros
 
 The analytical bound addresses the sealed-system limit. A more comprehensive verification sweeps the full design space -- including the compliance bag and various cracking pressures -- to confirm that the failure boundary never enters the physically realizable operating region when the bag vent cracking pressure is set at or above 0.5 bar gauge.
 
-@fig-failure-boundary presents the failure boundary (the $\Delta P = 0$ contour, where return-leg pressure exactly equals ambient) on the $(V_{fixed}, T_{cargo})$ plane for five cracking-pressure values. Below each contour, the system completes the round trip with nonnegative pressure. Above each contour, the system goes sub-atmospheric on the return leg.
+@fig-failure-boundary presents the failure boundary (the $\Delta P = 0$ contour, where return-leg pressure exactly equals ambient) on the $(V_{fixed}, T_{cargo})$ plane for five cracking-pressure values. Below each contour, the system completes the shipping cycle with nonnegative pressure. Above each contour, the system goes sub-atmospheric on the return leg.
 
 ```{python}
 #| label: fig-failure-boundary
@@ -538,7 +989,7 @@ def simulate(V_fixed_L, T_cargo_C, P_crack_Pa,
              V_bag_init_L=V_BAG_INIT_L, V_bag_max_L=V_BAG_MAX_L,
              T_tarmac_C=35.0):
     """
-    Simulate one round-trip shipping cycle.
+    Simulate one shipping cycle (outbound flight + return leg).
 
     Parameters
     ----------
@@ -798,20 +1249,24 @@ plt.tight_layout()
 plt.show()
 ```
 
-The key finding from @fig-failure-boundary: the 0.5 bar circuit relief boundary (7.25 psig) does not enter the plotted region. Under any combination of $V_{fixed}$ from 20 to 120 L and $T_{cargo}$ from 5 to 30 °C, the system completes the round trip with nonnegative return-leg pressure when the vent cracking pressure is 0.5 bar gauge or higher. The lower cracking-pressure contours demonstrate how the failure mechanism emerges at progressively smaller volumes as the vent threshold decreases.
+The key finding from @fig-failure-boundary: the 0.5 bar circuit relief boundary (7.25 psig) does not enter the plotted region. Under any combination of $V_{fixed}$ from 20 to 120 L and $T_{cargo}$ from 5 to 30 °C, the system completes the shipping cycle with nonnegative return-leg pressure when the vent cracking pressure is 0.5 bar gauge or higher. The lower cracking-pressure contours demonstrate how the failure mechanism emerges at progressively smaller volumes as the vent threshold decreases.
 
-@tbl-max-safe-volume summarizes the maximum rigid volume that avoids return-leg underpressure for each cracking pressure at the worst-case cargo temperature of 30 °C.
+::: callout-note
+The parametric sweep covers $T_{cargo}$ from 5 to 30 °C. The shipping specification (@tbl-shipping-spec) permits cargo temperatures up to 40 °C. Extension of the sweep to the full 10–40 °C specified range is a follow-up action; the ideal-gas overpressure bound in @sec-upper-bound applies at any temperature and confirms that the PED relief does not open at 40 °C.
+:::
+
+@tbl-max-safe-volume summarizes the maximum rigid volume that avoids return-leg underpressure for each cracking pressure at $T_{cargo} = 30\;\text{°C}$ (the upper limit of the current parametric sweep; the shipping specification permits up to 40 °C).
 
 ::: {#tbl-max-safe-volume tbl-colwidths="[30,25,25,20]"}
 | Cracking pressure | Gauge (bar) | Gauge (psig) | Max safe $V_{fixed}$ (L) |
 |:-------------------|------------:|-------------:|-------------------------:|
-| Ideal vent | 0.000 | 0.00 | 52.6 |
-| Low threshold | 0.069 | 1.00 | 67.1 |
-| Moderate threshold | 0.138 | 2.00 | 109.2 |
+| Ideal vent | 0.000 | 0.00 | {{< var ideal-return-threshold-l >}} |
+| Low threshold | 0.069 | 1.00 | 69.3 |
+| Moderate threshold | 0.138 | 2.00 | {{< var two-psig-return-threshold-l >}} |
 | High threshold | 0.345 | 5.00 | $>$120 |
 | PED circuit relief | 0.500 | 7.25 | $>$120 |
 
-Maximum rigid volume for nonnegative return-leg pressure at $T_{cargo} = 30\;\text{°C}$ and $T_{tarmac} = 35\;\text{°C}$. The PED 0.5 bar relief eliminates the failure for any practical assembly volume.
+Maximum rigid volume for nonnegative return-leg pressure at $T_{cargo} = 30\;\text{°C}$ (sweep limit) and $T_{tarmac} = 35\;\text{°C}$. The PED 0.5 bar relief eliminates the failure for any practical assembly volume. Extension to the full specified 40 °C cargo range is a planned follow-up.
 :::
 
 ## Conditions for Validity {#sec-validity-conditions}
@@ -847,6 +1302,7 @@ The findings and overpressure disposition below are conditioned on explicit vali
 - Maximum cabin altitude at or below 8000 ft (FAA 14 CFR 25.841) unless superseded by verified carrier cargo-hold data.
 - For a vent-removed configuration: bag and port integrity over the full shipping duration (no pinhole or seal defect that reintroduces slow loss).
 - Circuit relief setpoint at or above 0.5 bar gauge as installed (calibration evidence required for formal closure).
+- Perfect valve closure on the return leg (the valve fully seats once backpressure exceeds cracking pressure). This assumption is **known non-conservative**: the as-built valve requires up to 2 psig reverse differential to reseat (**FND-SH-006**), and the model never produces that much backpressure (**FND-SH-007**). The single-flight results are therefore optimistic; see **FND-SH-008** through **FND-SH-011** for multi-leg and handling implications.
 
 # Findings {#sec-findings}
 
@@ -863,9 +1319,9 @@ The findings and overpressure disposition below are conditioned on explicit vali
 :::
 
 ::: {#fnd-sh-003}
-**FND-SH-003:** The rigid connected volume $V_{fixed}$ remains the decisive missing parameter for fully dispositioning the **as-built vented** concept against @eq-no-vent and @eq-return-threshold.
+**FND-SH-003:** The rigid connected volume $V_{fixed}$ is conservatively estimated at {{< var v-fixed-l >}} L, placing the as-built vented concept between the no-vent threshold ({{< var no-vent-threshold-l >}} L) and the nonnegative-return threshold ({{< var ideal-return-threshold-l >}} L for ideal vent, {{< var two-psig-return-threshold-l >}} L for the as-built 2 psig valve). A traceable measurement is required for formal disposition.
 
-*Disposition: open until measured (@sec-critical-unknowns, @sec-closure).*
+*Disposition: preliminary estimate available; open until traceable measurement confirms (@sec-critical-unknowns, @sec-closure).*
 :::
 
 ::: {#fnd-sh-004}
@@ -880,31 +1336,89 @@ The findings and overpressure disposition below are conditioned on explicit vali
 *Disposition: proposed design implication (@sec-decision-status).*
 :::
 
+::: {#fnd-sh-006}
+**FND-SH-006:** The as-built check valve (Swagelok 6L-CW4VR4-P) requires up to 2 psig reverse differential to achieve full closure.
+
+*Disposition: manufacturer specification (@tbl-vent-valve); citation pending.*
+:::
+
+::: {#fnd-sh-007}
+**FND-SH-007:** The single-flight model produces maximum return-leg backpressure below 2 psig across the full operating envelope ($V_{fixed}$ 20–120 L, $T_{cargo}$ 10–40 °C) for the as-built 2 psig cracking assumption. Under the ideal-vent assumption, backpressure exceeds 2 psig at extreme corners of the envelope (e.g., 120 L, 40 °C).
+
+*Disposition: supported by parametric sweep (@sec-parametric-surface); limited to the 2 psig valve case.*
+:::
+
+::: {#fnd-sh-008}
+**FND-SH-008:** Once cracked open during ascent, the as-built 2 psig valve does not experience sufficient backpressure to reseat during the remainder of a single flight cycle (derived from **FND-SH-006** + **FND-SH-007**). Under the ideal-vent assumption at extreme envelope corners, backpressure may exceed the reseat threshold, but the valve has already vented more mass in that scenario.
+
+*Disposition: derived finding; supported by model results and manufacturer specification.*
+:::
+
+::: {#fnd-sh-009}
+**FND-SH-009:** Shipments routinely involve multiple flight legs; each leg is an additional venting event that compounds nitrogen mass loss.
+
+*Disposition: operational fact; confirmed by shipping logistics.*
+:::
+
+::: {#fnd-sh-010}
+**FND-SH-010:** The single-flight-cycle model does not capture multi-leg cumulative mass loss. The actual mass deficit after a multi-leg shipment exceeds the single-leg prediction.
+
+*Disposition: acknowledged model limitation.*
+:::
+
+::: {#fnd-sh-011}
+**FND-SH-011:** The foil bag is not structurally self-supporting; gravity and handling can mechanically displace bag volume through an unseated valve, enabling bidirectional gas exchange independent of pressure-driven venting.
+
+*Disposition: physical observation; not captured in the quasi-static model.*
+:::
+
+::: {#fnd-sh-012}
+**FND-SH-012:** The overpressure bound (@eq-dp-bound) is a per-leg result that holds regardless of flight count; vent removal remains safe from an overpressure standpoint across multiple legs.
+
+*Disposition: supported by current report (@sec-upper-bound).*
+:::
+
+::: {#fnd-sh-013}
+**FND-SH-013:** The optical module seals are positive-pressure energized but their leak rate under elevated gauge pressure (up to 0.5 bar / 7.25 psig) is uncharacterized. If the bag vent is removed, this becomes a potential competing mass-loss pathway.
+
+*Disposition: data gap; requires leak-down test (@sec-closure).*
+:::
+
+::: {#fnd-sh-014}
+**FND-SH-014:** Alternative check valves do not address multi-leg ratcheting (**FND-SH-009**) or handling-driven breathing (**FND-SH-011**); any outward-only valve retains the irreversible mass-loss pathway of **FND-SH-001**.
+
+*Disposition: derived finding; supports vent-removal recommendation (@sec-decision-status).*
+:::
+
 # Critical Unknowns {#sec-critical-unknowns}
 
-The single most important unknown is the rigid connected nitrogen volume $V_{fixed}$. It determines where production hardware lies on the screening map in @tbl-thresholds and @fig-min-dp-sweep relative to the no-vent and return-margin limits.
+The rigid connected nitrogen volume $V_{fixed}$ is conservatively estimated at approximately {{< var v-fixed-l >}} L. At that volume the system sits between the no-vent threshold ({{< var no-vent-threshold-l >}} L) and the nonnegative-return threshold ({{< var ideal-return-threshold-l >}} L) for ideal outward venting, and well below the {{< var two-psig-return-threshold-l >}} L threshold for the as-built 2 psig vent (@tbl-thresholds).
 
-**Why it matters:** Until $V_{fixed}$ is known, the project cannot rigorously classify the present vented architecture as clearly inside, near, or beyond the ideal-vent thresholds in @tbl-thresholds.
+**Why a traceable measurement still matters:** The 35 L estimate is conservative but informal. A formal disposition of the as-built vented configuration against @eq-no-vent and @eq-return-threshold requires a traceable value recorded against the same manifold boundary used in this analysis.
 
-**What closes it:** A direct volume measurement (CAD roll-up, gas-fill/water displacement, or equivalent traceable method) recorded against the same manifold boundary used in this analysis.
+**What closes it:** A direct volume measurement (CAD roll-up, gas-fill/water displacement, or equivalent traceable method).
 
 # Remaining Data To Close The Argument {#sec-closure}
 
 | Item | Owner | What it proves | Status |
 |:-----|:------|:---------------|:-------|
-| Measure $V_{fixed}$ | TBD | Places the as-built vented hardware on the screening map; enables interpretation against @eq-no-vent and @eq-return-threshold. | Not started |
+| Measure $V_{fixed}$ | TBD | Confirms or refines the conservative 35 L estimate; places the as-built hardware on the screening map against @eq-no-vent and @eq-return-threshold. | Conservative estimate available (35 L); traceable measurement pending |
 | Verify bag integrity if vent removal is pursued | TBD | Confirms that eliminating the vent path does not leave a slow leak through the bag or port that reintroduces inventory loss. | Not started |
 | Verify relief calibration $\ge$ 0.5 bar gauge | TBD | Confirms the validity condition used in the overpressure bound (@sec-validity-conditions). | Not started |
-| Characterize actual outward vent threshold (vs ideal vent) | TBD | If the hardware behaves closer to a finite cracking pressure (e.g. 2 psig), thresholds shift (@tbl-thresholds); disposition must use measured or specified behavior. | Not started |
+| Characterize actual outward vent threshold (vs ideal vent) | TBD | The as-built valve (Swagelok 6L-CW4VR4-P) specifies 2 psig cracking pressure (@tbl-vent-valve); disposition should use this value rather than ideal vent. | Vendor specification available; functional verification pending |
 | Verify effective cargo-hold pressure / altitude | TBD | Confirms the 8000 ft cabin-altitude envelope used in screening and cruise-bound tables. | Not started |
+| Full-assembly leak-down test at 5–6 psig gauge | TBD | Characterizes seal leak rate under the gauge pressure that would exist if the bag valve is removed and PED relief carries overpressure. Determines whether seal weepage is a competing mass-loss pathway (**FND-SH-013**). | Not started |
+| Obtain valve reseat specification document | Mike | Provides traceable citation for **FND-SH-006** (2 psig reverse differential to fully seat). | Document available; citation pending |
 
 ::: callout-important
-## How to interpret the measured rigid volume
+## How to interpret the rigid volume
 
-- If $V_{fixed} \le 15.28$ L, the present concept avoids venting under the ideal-vent screening case.
-- If $15.28 < V_{fixed} \le 52.55$ L, the present concept can vent and still remain nonnegative on return under ideal venting, but with limited or zero margin.
-- If $V_{fixed} > 52.55$ L, ideal outward venting still produces sub-atmospheric return conditions.
-- If the bag valve behaves more like a `2 psig` outward vent, the same mechanism remains present but shifts to a larger threshold volume of 109.19 L (@tbl-thresholds).
+The conservative estimate of $V_{fixed} \approx 35\;\text{L}$ places the system in the second band below:
+
+- If $V_{fixed} \le$ {{< var no-vent-threshold-l >}} L, the present concept avoids venting under the ideal-vent screening case.
+- **If {{< var no-vent-threshold-l >}} $< V_{fixed} \le$ {{< var ideal-return-threshold-l >}} L** (current estimate: {{< var v-fixed-l >}} L), the present concept vents on the outbound leg but still returns nonnegative under ideal venting. Margin is limited; the 30 L ideal-vent case in @tbl-cases returns with zero margin.
+- If $V_{fixed} >$ {{< var ideal-return-threshold-l >}} L, ideal outward venting produces sub-atmospheric return conditions.
+- With the as-built 2 psig Swagelok valve (@tbl-vent-valve), the nonnegative-return threshold shifts to {{< var two-psig-return-threshold-l >}} L (@tbl-thresholds), providing substantial margin at {{< var v-fixed-l >}} L.
 :::
 
 # Decision Status {#sec-decision-status}
@@ -913,7 +1427,7 @@ The single most important unknown is the rigid connected nitrogen volume $V_{fix
 
 This report is not limited to mechanism description alone. Based on **FND-SH-004** and **FND-SH-005**, and on the parametric evidence in @fig-failure-boundary and @tbl-max-safe-volume, the recommended path forward for contamination control is **removal or permanent sealing of the bag vent**, with outbound structural margin carried by the existing 0.5 bar circuit relief, **subject to** closure of the items in @sec-closure (especially $V_{fixed}$, bag integrity if the vent is removed, and relief calibration).
 
-Measurement of $V_{fixed}$ remains mandatory to disposition the **legacy vented** configuration and to confirm that screening assumptions match the built article; it does not negate the overpressure-based argument for vent removal under @sec-review-assumptions.
+The conservative estimate of $V_{fixed} \approx$ {{< var v-fixed-l >}} L is consistent with both the vent-removal recommendation (safe at any volume under PED relief) and the legacy vented disposition (below the {{< var two-psig-return-threshold-l >}} L threshold for the as-built 2 psig valve). Traceable measurement remains required for formal closure but does not alter the recommendation direction.
 
 # Evidence Sources {#sec-evidence-sources}
 
@@ -930,7 +1444,12 @@ Measurement of $V_{fixed}$ remains mandatory to disposition the **legacy vented*
 
 1. The present 0.5 bar safety relief addresses outbound structural overpressure but does not, by itself, prevent return-leg contamination failure (**FND-SH-001**).
 2. The governing failure mode is return-leg underpressure after irreversible nitrogen mass loss during outbound venting; leakage through the bag path is not required to explain it (**FND-SH-001**, **FND-SH-002**).
-3. For the 22 L bag and stated envelope, ideal-vent screening limits are 15.28 L (no outbound venting) and 52.55 L (nonnegative return); **FND-SH-003** applies until $V_{fixed}$ is measured.
+3. For the {{< var bag-volume-l >}} L bag and stated envelope, ideal-vent screening limits are {{< var no-vent-threshold-l >}} L (no outbound venting) and {{< var ideal-return-threshold-l >}} L (nonnegative return). The conservative estimate of $V_{fixed} \approx$ {{< var v-fixed-l >}} L falls between these thresholds; **FND-SH-003** remains open pending traceable measurement.
 4. The existing 0.5 bar circuit relief does not open under physically realizable single-flight cargo temperatures; the relief-opening temperature from @eq-t-relief is infeasible in air freight (**FND-SH-004**).
 5. Under @sec-review-assumptions and @sec-validity-conditions, removing the bag vent eliminates the vent-path mass-loss driver analyzed here; parametric results support nonnegative return-leg pressure at PED-level cracking pressure (**FND-SH-005**).
-6. **Bag-vent removal is a proposed design recommendation**, not an executed hardware change, as stated in @sec-decision-status; formal closure requires @sec-closure.
+6. The as-built check valve cannot reseat during a single flight cycle: the manufacturer specification requires up to 2 psig reverse differential (**FND-SH-006**), and the model produces less than 2 psig return-leg backpressure across the full operating envelope (**FND-SH-007**). The valve therefore remains open after first cracking (**FND-SH-008**).
+7. Multi-leg shipments compound the single-flight mass loss (**FND-SH-009**); the single-flight model underestimates the actual nitrogen deficit (**FND-SH-010**). Handling-driven breathing through the unseated valve provides an additional, pressure-independent exchange pathway (**FND-SH-011**).
+8. The overpressure bound holds per-leg regardless of flight count; vent removal remains safe from an overpressure standpoint across multiple legs (**FND-SH-012**).
+9. Seal leak rate under elevated gauge pressure is uncharacterized; if the vent is removed, this becomes a potential competing mass-loss pathway requiring a leak-down test (**FND-SH-013**).
+10. Alternative check valves do not resolve the fundamental irreversible mass-loss pathway; any outward-only valve retains the failure mechanism (**FND-SH-014**).
+11. **Bag-vent removal is a proposed design recommendation**, not an executed hardware change, as stated in @sec-decision-status; formal closure requires @sec-closure.

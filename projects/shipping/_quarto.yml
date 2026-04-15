@@ -19,6 +19,7 @@ project:
 
 metadata-files:
   - ../../_shared/_metadata.yml
+  - _variables.yml
 
 # Bibliography lives at the workspace level (shared across all projects).
 # Paths here are relative to this _quarto.yml file.
