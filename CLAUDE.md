@@ -19,7 +19,9 @@ D:\Quarto\
 ├── .git/
 │
 ├── .claude/
-│   └── agents/                   workspace-local agents (research-publisher, etc.)
+│   └── agents/                   workspace-local agents (technical-reviewer, etc.)
+│
+├── .codex/skills/                Codex CLI skills (quarto-*, technical-doc-review)
 │
 ├── _shared/                      shared across ALL projects in this workspace
 │   ├── _metadata.yml             shared Quarto YAML (formats, LaTeX preamble, exec)
@@ -38,6 +40,7 @@ D:\Quarto\
 │   └── <project>/
 │       ├── manifest.yml
 │       ├── claims.yml
+│       ├── reviews/              review JSON artifacts
 │       └── briefs/
 │
 ├── _scratch/                     throwaway: prompt files, intermediate logs
@@ -45,30 +48,97 @@ D:\Quarto\
 ├── .venv/                        workspace-shared Python venv (uv-managed)
 │
 └── projects/
-    └── galling-mitigation/       FIRST PROJECT (current)
-        ├── _quarto.yml           project config (inherits ../../_shared/_metadata.yml)
-        ├── report.qmd
-        ├── test-plan.qmd
-        ├── refs.bib              (optional) project-specific cite additions
-        ├── figures/
-        │   └── fixture-schematic.png
-        ├── source/               original AI-generated source files (preserved)
-        │   ├── report.R2.md
-        │   └── test_plan.R2.md
-        ├── _freeze/              Quarto cell-output cache (committed)
-        └── _output/              rendered HTML + PDF (gitignored, regenerable)
+    ├── galling-mitigation/       (see Project Directory Standard below)
+    └── shipping/
 ```
+
+## Project Directory Standard
+
+Every project under `projects/<name>/` follows this structure. Required
+items are marked (R); optional items are marked (O).
+
+```
+projects/<name>/
+├── README.md                 (R) Project overview: purpose, documents, how to render
+├── _quarto.yml               (R) Quarto config — inherits ../../_shared/_metadata.yml
+├── SESSION_HANDOFF.md        (R) Running status, to-do items, next-session actions
+├── *.qmd                     (R) Quarto source documents (one per deliverable)
+│
+├── _variables.yml            (O) Quarto {{< var >}} shortcodes for key numeric values
+├── figures/                  (O) Static images referenced by .qmd files
+├── generated/                (O) Artifacts produced by code (prefixed with doc ID)
+├── source/                   (O) Original input files (AI drafts, Word docs, notes)
+├── matlab/                   (O) MATLAB companion analysis (see MATLAB convention below)
+├── Reviews/                  (O) Review reports (Markdown, one per reviewer)
+│
+├── _freeze/                  (O) Quarto cell-output cache (committed to git)
+├── _output/                  (O) Rendered deliverables (.docx tracked; .html/.pdf ignored)
+└── .gitignore                (O) Project-specific ignores (supplements workspace .gitignore)
+```
+
+### README.md content
+
+Each project README answers three questions:
+
+1. **What is this?** — One-paragraph summary: document ID, title, what
+   it covers, current status (draft / in review / released).
+2. **What files are here?** — Table of key files with one-line purpose
+   descriptions. Group by category (documents, analysis, source, output).
+3. **How do I render?** — Exact shell commands to produce the
+   deliverable(s). Include `QUARTO_PYTHON` setup if Python cells exist.
+
+### SESSION_HANDOFF.md content
+
+The session handoff is the running project journal. Structure:
+
+- **Header block** — last updated date, branch, one-line status
+- **Next Session Action** — what to do first (executable, not descriptive)
+- **Open To-Do Items** — tables of open findings/tasks with severity and status
+- **Session log** — reverse-chronological record of what each session accomplished
+- **Primary working files** — table of key file paths and their purpose
+
+### Generated artifact naming
+
+Files in `generated/` use the document ID as prefix for traceability:
+`PIR-SH-001_quasistatic_case_summary.tsv`, not `case_summary.tsv`.
+
+### MATLAB analysis directories
+
+When a project has a MATLAB companion analysis, it lives at
+`projects/<name>/matlab/` and follows this layout:
+
+- Entry points at root: `run_*.m`, `generate_*.m`, `verify_*.m`
+- `src/` for pure-computation functions (no side effects)
+- `report/` for report-generation code (presentation layer)
+- `output/` is gitignored (all artifacts regenerable)
+- `README.md` is mandatory: How to Run, What It Produces, Directory Structure
+- No hardcoded paths — use `fileparts(mfilename('fullpath'))`
+
+### Review artifacts
+
+Reviews live in two places:
+- `projects/<name>/Reviews/` — human-readable Markdown reports
+- `_state/<name>/reviews/` — machine-readable JSON payloads
+
+Both are committed. Name pattern: `Review-<document>-<reviewer>.md` and
+`<document>-<reviewer>.json`.
 
 ## Adding a New Project
 
 ```bash
 # From the workspace root:
 mkdir -p projects/<new-project>/source
+
+# Copy source material
 cp <wherever>/draft.md projects/<new-project>/source/
 
-# Create projects/<new-project>/_quarto.yml mirroring the galling-mitigation one
-# Then invoke the research-publisher agent (when it exists):
-#   "Use research-publisher to convert projects/<new-project>/source/draft.md"
+# Create required files:
+#   _quarto.yml     — copy from shipping or galling-mitigation, adjust render list
+#   README.md       — answer the three questions (what, files, render)
+#   SESSION_HANDOFF.md — initialize with header block and first action
+
+# Create orchestrator state directory:
+mkdir -p _state/<new-project>/reviews
 ```
 
 ## Render Workflow

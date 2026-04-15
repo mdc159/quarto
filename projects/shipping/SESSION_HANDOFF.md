@@ -1,16 +1,42 @@
 # Session Handoff — Shipping Failure Mechanism Analysis
 
-**Last updated:** 2026-04-15 (session 3)
+**Last updated:** 2026-04-15 (session 4)
 **Branch:** master
-**Status:** All critical and major review findings resolved. Variable infrastructure in place. Codex reviewer re-run pending.
+**Status:** Reasoned reviewer findings resolved. Gemini review received — findings logged below. MATLAB analysis added to `matlab/`.
 
 ## Next Session Action
 
-Review the Codex reviewer output from session 3 and address any new findings. Remaining lower-priority items:
+Work through the Gemini review findings below (prioritize G-C1 and G-C3, then majors). The MATLAB companion analysis is now co-located at `projects/shipping/matlab/` and validated against Python.
 
-1. **Extend parametric sweep to 40 °C** — currently capped at 30 °C; shipping spec allows 40 °C. The callout note and @tbl-max-safe-volume caption acknowledge this limitation.
-2. **Obtain valve reseat citation** — FND-SH-006 disposition says "citation pending" (Mike has the document).
-3. **Consider regenerating @tbl-cases entirely from Python** — currently labeled as MATLAB-sourced with T_cargo = 20 °C. A full Python regeneration would eliminate the source-of-truth gap but changes many values.
+## Open To-Do Items
+
+### Gemini Review Findings (2026-04-15)
+
+| ID | Severity | Issue | Status |
+|---|---|---|---|
+| G-C1 | Critical | Parametric sweep stops at 30 °C; shipping spec allows 40 °C — extend to full envelope or scope the recommendation | To do |
+| G-C2 | Critical | Multi-leg accumulation not modeled; vent-removal recommendation scope (single vs multi-leg) unclear | To do |
+| G-C3 | Critical | Valve reseat assumption breaks down in multi-leg — no derivation for leg N+1 with stuck-open valve | To do |
+| G-M1 | Major | V_fixed 35 L estimate remains informal; add ±3 L sensitivity table | To do |
+| G-M2 | Major | Missing BibTeX entries: Swagelok datasheet, FAA 14 CFR 25.841, PED 2014/68/EU, ICAO std atm | To do |
+| G-M3 | Major | Abs vs gauge pressure notation ambiguous in @eq-alpha, @eq-pint-bound, @eq-dp-bound | To do |
+| G-M4 | Major | T_seal sensitivity (15–30 °C) not quantified; thresholds shift with seal-up temperature | To do |
+
+### Carryover Items
+
+| Item | Status |
+|---|---|
+| Obtain valve reseat citation — FND-SH-006 "citation pending" (Mike has the document) | Waiting on Mike |
+| Regenerate @tbl-cases from Python — currently MATLAB-sourced at T_cargo = 20 °C | To do (biggest lift) |
+| Extend parametric sweep to 40 °C (overlaps G-C1) | To do |
+
+## What was accomplished (2026-04-15, session 4)
+
+### Project conventions established
+- Added Project Directory Standard to workspace `CLAUDE.md` — README, SESSION_HANDOFF, naming, MATLAB layout
+- Created `README.md` for shipping project
+- MATLAB companion analysis committed to `matlab/` (from matlab-mcp handoff)
+- Gemini review findings logged as to-do table above
 
 ## What was accomplished (2026-04-15, session 3)
 
