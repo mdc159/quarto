@@ -53,14 +53,14 @@ During shipping, the continuous purge is unavailable. The assembly is sealed at 
 
 1.  **Foil compliance bag** -- a CALDRY 1500 multilayer foil reservoir that can expand and contract between approximately zero and 22 L. The foil is geometrically compliant but not elastically compliant: it unfolds and refolds between hard geometric limits with negligible restoring force across its usable range.
 
-2.  **Outward-only check/vent valve** -- a Swagelok 6L-CW4VR4-P high-purity welded check valve. It permits nitrogen to escape if the internal pressure exceeds ambient by the valve's cracking threshold, but does not admit ambient flow inward. A separate 0.5 bar gauge safety relief valve remains on the main assembly per the European pressure equipment directive.
+2.  **Outward-only check/vent valve** -- a Swagelok 6L-CW4VR4-P high-purity welded check valve. It permits nitrogen to escape if the internal pressure exceeds ambient by the valve's cracking threshold, but does not admit ambient flow inward. A separate 0.5 bar gauge safety relief valve remains on the main assembly per the European pressure equipment directive [@ped_2014_68_eu].
 
 @tbl-vent-valve lists the relevant specifications for the breather-path check valve.
 
 ::: {#tbl-vent-valve tbl-colwidths="[40,60]"}
 | Parameter | Value |
 |:---------------------------|:----------------------------------------------|
-| Part number | Swagelok 6L-CW4VR4-P |
+| Part number | Swagelok 6L-CW4VR4-P [@swagelok_6l_cw4vr4p] |
 | Description | 316L SS high-purity welded check valve, SC-01 cleaned |
 | Cracking pressure | 2 psig (0.14 bar) |
 | Flow coefficient $C_v$ | 0.7 |
@@ -71,6 +71,10 @@ During shipping, the continuous purge is unavailable. The assembly is sealed at 
 
 Breather-path check valve specifications. The 2 psig cracking pressure is the threshold used in the "vent threshold 2 psig" screening cases in @tbl-thresholds.
 :::
+
+## Notation {.unnumbered}
+
+All pressures ($P_{seal}$, $P_{amb}$, $P_{low}$, $P_{peak}$) are **absolute** unless explicitly marked "gauge." The pressure differential $\Delta P = P_{int} - P_{amb}$ is always gauge (positive when internal exceeds ambient). Cracking pressures and relief setpoints are stated in gauge units (psig or bar gauge). Volumes are in litres, temperatures in kelvin for equations and degrees Celsius in narrative.
 
 @fig-three-regimes shows the baseline shipping cycle for the estimated 35 L rigid volume with the as-built 2 psig valve. Under these parameters the bag absorbs the full excursion without venting and no harmful pressure differential develops — the safe baseline. @fig-ideal-vent-cycle in @sec-actual-mechanism shows how the failure sequence emerges at larger rigid volumes or lower vent thresholds.
 
@@ -332,8 +336,8 @@ The transport state space derived from these requirements and the applicable reg
 | Parameter | Value | Basis |
 |:----------------------|:------------------------|:------------------------|
 | Temperature range | 10 °C to 40 °C | Shipping specification |
-| Maximum cabin altitude | \~8,000 ft (2,440 m) | FAA 14 CFR 25.841 |
-| Ambient pressure at cabin altitude | 75.26 kPa (0.743 atm) | ICAO standard atmosphere at 8000 ft |
+| Maximum cabin altitude | \~8,000 ft (2,440 m) | FAA 14 CFR 25.841 [@faa_14cfr25_841] |
+| Ambient pressure at cabin altitude | 75.26 kPa (0.743 atm) | ICAO standard atmosphere at 8000 ft [@icao_std_atmosphere] |
 | Internal gas | Diatomic nitrogen (N2), ultra-pure | Purge specification |
 | Maximum shipping duration | 30 to 60 days | Operational requirement |
 | Bag maximum volume $V_{bag,max}$ | 22 L | CALDRY 1500 measured capacity |
@@ -1409,6 +1413,7 @@ The rigid connected nitrogen volume $V_{fixed}$ is conservatively estimated at a
 | Verify effective cargo-hold pressure / altitude | TBD | Confirms the 8000 ft cabin-altitude envelope used in screening and cruise-bound tables. | Not started |
 | Full-assembly leak-down test at 5–6 psig gauge | TBD | Characterizes seal leak rate under the gauge pressure that would exist if the bag valve is removed and PED relief carries overpressure. Determines whether seal weepage is a competing mass-loss pathway (**FND-SH-013**). | Not started |
 | Obtain valve reseat specification document | Mike | Provides traceable citation for **FND-SH-006** (2 psig reverse differential to fully seat). | Document available; citation pending |
+| Multi-leg underpressure analysis | TBD | Determines whether the vent-removal recommendation extends to multi-leg shipments. The single-flight model does not cover the valve-stuck-open scenario on leg 2+ (**FND-SH-008**, **FND-SH-009**). | Not started; recommendation currently scoped to single flight cycle |
 
 ::: callout-important
 ## How to interpret the rigid volume
@@ -1426,6 +1431,12 @@ The conservative estimate of $V_{fixed} \approx 35\;\text{L}$ places the system 
 **Decision status: proposed design recommendation.**
 
 This report is not limited to mechanism description alone. Based on **FND-SH-004** and **FND-SH-005**, and on the parametric evidence in @fig-failure-boundary and @tbl-max-safe-volume, the recommended path forward for contamination control is **removal or permanent sealing of the bag vent**, with outbound structural margin carried by the existing 0.5 bar circuit relief, **subject to** closure of the items in @sec-closure (especially $V_{fixed}$, bag integrity if the vent is removed, and relief calibration).
+
+::: callout-warning
+## Multi-leg scope limitation
+
+The single-flight model and parametric sweep support the vent-removal recommendation for a single flight cycle. Multi-leg shipments introduce two mechanisms not captured by the model: (1) the as-built valve does not reseat after first cracking (**FND-SH-008**), creating a direct open path for bidirectional gas exchange on subsequent legs; and (2) cumulative mass loss across legs exceeds the single-leg prediction (**FND-SH-009**, **FND-SH-010**). With the vent removed, multi-leg overpressure remains bounded per-leg by the PED relief (**FND-SH-012**), but the underpressure analysis applies only to a single flight cycle. Formal extension to multi-leg operations requires a multi-leg valve-state model or explicit restriction to single-leg shipments. See @sec-closure.
+:::
 
 The conservative estimate of $V_{fixed} \approx$ {{< var v-fixed-l >}} L is consistent with both the vent-removal recommendation (safe at any volume under PED relief) and the legacy vented disposition (below the {{< var two-psig-return-threshold-l >}} L threshold for the as-built 2 psig valve). Traceable measurement remains required for formal closure but does not alter the recommendation direction.
 
