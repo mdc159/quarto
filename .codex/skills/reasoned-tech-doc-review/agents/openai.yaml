@@ -1,0 +1,4 @@
+interface:
+  display_name: "Reasoned Doc Review"
+  short_description: "Deep engineering document critique"
+  default_prompt: "Use $reasoned-tech-doc-review to audit this technical document for claim gaps, equation issues, logical contradictions, and source-of-truth drift."

@@ -3,6 +3,9 @@
 `AGENTS.md` is the primary Codex-facing operations guide for this repo.
 Use `CLAUDE.md` as background and historical rationale when this file does
 not answer a repo-specific question.
+Use `README.md` for the current review workflow, explicit skill and agent
+invocation examples, the manual OpenAI-backed review command, and the planned
+upgrade path from the current skill-based workflow to a fuller reviewer agent.
 
 ## Purpose
 
