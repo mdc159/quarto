@@ -6,6 +6,9 @@ Companion to `../failure-mechanism.qmd`.
 ## How to Run
 
 ```matlab
+% Interactive app (sliders, plots, pass/fail lamp)
+run('run_app.m')
+
 % Interactive analysis (11 sections, figures to screen)
 run('run_analysis.m')
 
@@ -16,10 +19,16 @@ generate_report({'pdf','pptx'}, 'my_dir')  % custom output dir
 
 % Verify report output
 verify_report()
+
+% Validate the app (15 automated tests)
+validate_app()
 ```
 
 ## What It Produces
 
+- **Interactive app** — uifigure with collapsible control panel, preset dropdown,
+  4 sliders, pass/fail lamp, Explorer tab (4-panel time-series), Analysis tab
+  (V_fixed sweep, multi-case overlay, P_crack sensitivity, 3D failure surface)
 - **Interactive analysis** — 11-section script with scenario presets, flight profiles,
   baseline cases, 5-phase walkthrough, sweeps, parametric failure surfaces
 - **PDF report** — 10-chapter engineering document following the Quarto storyline
@@ -34,9 +43,12 @@ This directory follows the **MATLAB Analysis Directory Convention**.
 ```
 matlab/
 ├── README.md               # This file
+├── run_app.m                # ENTRY POINT: interactive app
 ├── run_analysis.m           # ENTRY POINT: interactive analysis
 ├── generate_report.m        # ENTRY POINT: report generation
 ├── verify_report.m          # ENTRY POINT: report verification
+├── validate_app.m           # ENTRY POINT: app validation (15 tests)
+├── nitrogen_shipping_app.m  # App: uifigure with controls + plots
 ├── nitrogen_shipping_analysis.m  # Main analysis script
 ├── src/                     # Reusable functions (simulation engine, utilities)
 │   ├── nitrogen_shipping_sim.m
