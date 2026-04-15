@@ -131,6 +131,7 @@ threshold tables, generated artifacts, and evidence-heavy conclusions.
 | ------------------------ | ------------------------------------------- | -------------------------------------- |
 | Baseline review skill    | `.codex/skills/technical-doc-review/`     | Normal technical QA pass               |
 | Reasoned review skill    | `.codex/skills/reasoned-tech-doc-review/` | Deep contradiction/evidence/unit audit |
+| Gemini Reasoned Review   | `skills/gemini-technical-reviewer/`         | Gemini 3.1 Pro full-context single-pass review |
 | Workspace reviewer agent | `.claude/agents/technical-reviewer.md`    | Claude-based review agent              |
 | OpenAI-backed reviewer   | `_scripts/openai_reasoned_review.py`      | Structured reasoning review via o3     |
 
@@ -169,6 +170,13 @@ Optional environment variables:
 ```text
 Use $reasoned-tech-doc-review to review projects/shipping/failure-mechanism.qmd
 for logical contradictions, unsupported claims, and thermodynamic/unit issues.
+```
+
+**Via Gemini Review Skill:**
+
+```text
+Run the gemini-technical-reviewer skill on projects/shipping/failure-mechanism.qmd.
+(It will output a Markdown report to projects/<project>/Reviews/ and a JSON payload to _state/<project>/reviews/)
 ```
 
 **Via Claude agent:**

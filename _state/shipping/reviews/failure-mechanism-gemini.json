@@ -1,0 +1,63 @@
+{
+  "target": "projects/shipping/failure-mechanism.qmd",
+  "summary": "The failure-mechanism document presents a rigorous thermodynamic analysis of return-leg underpressure as the root cause of nitrogen purge contamination in optical assemblies during air transport. The document successfully establishes the governing physics and proposes vent removal as a design solution. However, three critical gaps remain unresolved between the single-flight model evidence and the multi-leg operational reality: (1) the parametric sweep is limited to 30°C while shipping allows 40°C, (2) the valve non-reseat finding (FND-SH-006 to FND-SH-008) is acknowledged but not fully integrated into the multi-leg failure analysis, and (3) the multi-leg recommendation lacks quantitative proof that underpressure does not occur across consecutive flight legs.",
+  "findings": [
+    {
+      "severity": "high",
+      "location": "@sec-parametric-surface, @tbl-max-safe-volume caption, @sec-validity-conditions",
+      "issue": "The parametric boundary sweep in @fig-failure-boundary and @tbl-max-safe-volume covers only T_cargo = 5–30°C, explicitly noted as 'sweep limit'. The shipping specification (@tbl-shipping-spec) permits up to 40°C. Extrapolation is not rigorously supported.",
+      "recommendation": "Either (a) extend the parametric sweep to the full 10–40°C envelope, or (b) explicitly scope the vent-removal recommendation to 5–30°C with a caveat."
+    },
+    {
+      "severity": "high",
+      "location": "@sec-decision-status, FND-SH-009, FND-SH-010, @sec-closure",
+      "issue": "The document explicitly acknowledges multi-leg failure modes. Item 8 of conclusions claims 'vent removal remains safe... across multiple legs.', but the design recommendation does not explicitly restrict vent removal to single-leg scenarios or provide proof for multi-leg.",
+      "recommendation": "Clarify whether vent removal is recommended for single-leg or multi-leg operations. Provide multi-leg proof or state as an open condition."
+    },
+    {
+      "severity": "high",
+      "location": "FND-SH-006, FND-SH-007, FND-SH-008, @sec-review-assumptions",
+      "issue": "The model assumes the valve closes after venting and remains closed during the return leg. FND-SH-007 and FND-SH-008 find that the single-flight model produces maximum return-leg backpressure below 2 psig (valve reseat pressure), concluding the valve remains open after first cracking.",
+      "recommendation": "Add a multi-leg valve-state analysis, or restrict the vent-removal recommendation to proven single-leg operations with a multi-leg uncertainty callout."
+    },
+    {
+      "severity": "medium",
+      "location": "FND-SH-003, @sec-critical-unknowns, @sec-decision-status",
+      "issue": "The rigid volume is stated as conservatively estimated at approximately 35 L, but this is used as an anchor point creating subtle circular reasoning.",
+      "recommendation": "Complete the traceable V_fixed measurement before finalizing the document, or add a sensitivity table."
+    },
+    {
+      "severity": "medium",
+      "location": "@tbl-vent-valve, @sec-validity-conditions",
+      "issue": "The document references critical regulatory and equipment standards without formal bibliography entries (e.g., Swagelok valve datasheet, FAA 14 CFR 25.841, PED 2014/68/EU).",
+      "recommendation": "Add BibTeX entries for missing references."
+    },
+    {
+      "severity": "medium",
+      "location": "@eq-alpha, @eq-pint-bound, @eq-dp-bound",
+      "issue": "Pressures are inconsistently labeled as absolute or gauge throughout the equations.",
+      "recommendation": "Add a notation section clarifying absolute vs gauge pressure."
+    },
+    {
+      "severity": "medium",
+      "location": "@sec-validity-conditions, @eq-alpha, @eq-pint-bound",
+      "issue": "The document assumes seal-up at approximately 20 °C and builds all thresholds on alpha which depends on T_seal. Temperature sensitivity is not explored.",
+      "recommendation": "Add a brief parametric table showing thresholds at T_seal = 15, 20, 25, 30 °C."
+    }
+  ],
+  "residual_risks": [
+    "Multi-leg operational scope insufficiently defined: Model only proves single-flight safety.",
+    "Valve non-reseat creates open path on leg 2+: Never reseats during single-flight return.",
+    "Parametric boundary gap at 30–40°C: Recommendation based on evidence that covers 5–30°C."
+  ],
+  "sources_checked": [
+    "projects/shipping/failure-mechanism.qmd",
+    "projects/shipping/_quarto.yml",
+    "_shared/_metadata.yml",
+    "projects/shipping/SESSION_HANDOFF.md",
+    "projects/shipping/generated/PIR-SH-001_quasistatic_report_summary.md",
+    "projects/shipping/generated/PIR-SH-001_quasistatic_threshold_summary.tsv",
+    "projects/shipping/generated/PIR-SH-001_quasistatic_case_summary.tsv",
+    "_shared/refs.bib"
+  ]
+}

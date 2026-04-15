@@ -1,54 +1,147 @@
 {
-  "summary": "The mechanism description is technically sound but several traceability and reproducibility gaps remain.  A machine-specific LaTeX path still hard-codes the build environment and will break CI rendering.  Key quantitative limits and ambient-pressure inputs diverge between the narrative (now driven by _variables.yml) and the still-stale MATLAB\u2010generated artifacts, creating visible contradictions.  Central field-failure and valve-reseat claims lack documentary evidence.  Finally, the showcase figure and case table use a narrower 20 \u00b0C/30 \u00b0C sweep than the 40 \u00b0C envelope adopted elsewhere, obscuring worst-case margin.",
+  "summary": "The document cannot render or be reviewed coherently in its present form.  Un-fenced code, un-closed callout blocks and dozens of duplicate dash-only headings create immediate Quarto/Pandoc parsing failures (blockers).  Even where the file does compile, the engineering trace is broken: key pressure-volume thresholds, cabin-pressure values and temperature sweeps disagree between the prose, LaTeX equations, YAML variables and the generated TSV artefacts.  Core causal claims (field contamination history, valve cracking/re-seat capability, seal qualification) remain uncited, so the argument for vent removal is not yet evidence-traceable.  A focused clean-up of rendering structure, single-source variable wiring, and citation insertion is required before numerical or design conclusions can be trusted.",
   "findings": [
     {
       "severity": "blocker",
+      "category": "equation-units",
+      "location": "Eq. pint-bound / dp-bound and surrounding text",
+      "issue": "Pressures and temperatures mix absolute, gauge and Celsius without declaration; over-pressure bound compares absolute (ideal-gas) result to gauge relief set-point.",
+      "why_it_matters": "0.5 bar(g) relief vs 0.33 bar(abs) bound comparison is meaningless; safety margin may be overstated.",
+      "suggested_fix": "State units explicitly (Kelvin, absolute pressure) and convert before comparison; update tables/captions accordingly.",
+      "evidence": "Eq. \u0394P = Pseal\u00b7T/Tseal \u2013 Pamb followed by table comparing to \u201c0.5 bar g\u201d."
+    },
+    {
+      "severity": "blocker",
       "category": "render-crossref",
-      "location": "failure-mechanism.qmd:46 (code chunk)",
-      "issue": "Python chunk prepends a personal TinyTeX path (`C:\\Users\\Mike\\AppData\\Roaming\\TinyTeX\\bin\\windows`) to PATH.",
-      "why_it_matters": "Non-Windows or CI build hosts will not find LaTeX at this location, causing PDF render failures and breaking reproducibility.",
-      "suggested_fix": "Remove the hard-coded path tweak; document a portable TinyTeX installation step or rely on the system PATH.",
-      "evidence": "First lines of the code block labelled `fig-three-regimes` set PATH to the above absolute directory."
+      "location": "lines 352\u2013377 and elsewhere",
+      "issue": "Call-out blocks and fenced divs opened with \u201c:::\u201d are not closed.",
+      "why_it_matters": "Pandoc stops parsing at the first unmatched fence, so the remainder of the document renders as literal text or compilation aborts.",
+      "suggested_fix": "Ensure every \u201c::: class\u201d has a matching terminating \u201c:::\u201d.",
+      "evidence": "`::: callout-important` opened at line 352; no closing fence before next heading."
+    },
+    {
+      "severity": "blocker",
+      "category": "render-crossref",
+      "location": "many code regions (e.g. constants block line 95, phase colours line 214, surface plot line 1195)",
+      "issue": "Python code appears outside ```{python}``` fences; several closing ``` are unmatched.",
+      "why_it_matters": "Quarto treats these lines as text; later chunks that depend on the variables raise `NameError`, halting render and invalidating embedded figures/tables.",
+      "suggested_fix": "Wrap every executable region in a properly opened/closed code chunk; run `quarto check` to verify.",
+      "evidence": "`phase_colors = [...]` is plain text; `ax2.remove()` appears without an opening fence."
+    },
+    {
+      "severity": "blocker",
+      "category": "render-crossref",
+      "location": "multiple (e.g. lines 93, 95, 185, 198, 217)",
+      "issue": "Dash-only headings are reused as level-1 section titles.",
+      "why_it_matters": "Quarto generates identical anchors (\"section\", \"section-1\" \u2026) causing TOC clutter, anchor collisions and broken cross-references; several of these headings contain no content, breaking narrative structure.",
+      "suggested_fix": "Replace each \"# --------\" with either a descriptive unique heading or a Markdown horizontal rule (\"---\").",
+      "evidence": "Outline lists >15 sections titled \"# ---------------------------------------------------------------------------\"."
+    },
+    {
+      "severity": "blocker",
+      "category": "source-of-truth",
+      "location": "Threshold derivations vs generated TSV",
+      "issue": "Numerical limits (\u03b1 = 1.4381, no-vent 14.11 L, return 50.21 L) shown in prose/variables disagree with authoritative TSV (\u03b1 = 1.4186, no-vent 15.28 L, return 52.55 L).",
+      "why_it_matters": "Design acceptance criteria change by >1 L; reviewers cannot know which limit to enforce.",
+      "suggested_fix": "Regenerate the TSV/figures with the corrected ISA pressure or revert YAML edits until recalculation is complete; bind equations to the same data source.",
+      "evidence": "`PIR-SH-001_quasistatic_threshold_summary.tsv` preview vs LaTeX numbers in \u00a7Threshold 1 and YAML `_variables.yml`."
     },
     {
       "severity": "major",
       "category": "claim-evidence",
-      "location": "failure-mechanism.qmd:1, 355",
-      "issue": "Field-contamination history and 2 psig valve-reseat assertions are uncited.",
-      "why_it_matters": "These statements anchor the root-cause narrative and the recommendation to remove the bag vent; without documentary backing the argument is persuasive but unverifiable.",
-      "suggested_fix": "Add citation keys or internal links to the shipping NCRs, inspection memos, and valve test reports that confirm (a) moisture/biological ingress on return and (b) the 2 psig reverse-differential reseat requirement.",
-      "evidence": "Abstract and \u00a7Confirmed field failures claim \u201cconfirmed field failures\u201d and \u201cvalve requires up to 2 psig reverse differential,\u201d but no @cite or cross-reference follows either claim."
+      "location": "abstract & findings FND-SH-006/007",
+      "issue": "Valve cracking (2 psig) and reseat (>2 psig) requirements are asserted but labelled \u201ccitation pending\u201d.",
+      "why_it_matters": "Valve incapability drives the irreversible mass-loss mechanism; unsupported specs undermine the argument for vent removal.",
+      "suggested_fix": "Add vendor datasheet or bench-test citation; update Findings to include reference.",
+      "evidence": "FND-SH-006 disposition: \u201ccitation pending (Mike has the document)\u201d. "
+    },
+    {
+      "severity": "major",
+      "category": "claim-evidence",
+      "location": "abstract & \u00a7Field Contamination History",
+      "issue": "Field-failure and contamination assertions have no citation to inspection reports or test records.",
+      "why_it_matters": "These events are the primary motivation for the analysis; without traceable evidence the causal chain is speculative.",
+      "suggested_fix": "Insert citations (e.g. failure report IDs, inspection memos) or attach summaries in an appendix and cross-reference.",
+      "evidence": "Abstract: \u201cconfirmed field failures\u201d; \u00a7Field Contamination History provides narrative only."
+    },
+    {
+      "severity": "major",
+      "category": "claim-evidence",
+      "location": "\u00a7Upper Bound on Overpressure and table 80 \u00b0C row",
+      "issue": "Text claims 0.21 bar(g) < \u00bd of relief, but installed valve cracks at 2 psig = 0.138 bar(g).",
+      "why_it_matters": "Over-pressure margin is mis-stated by \u224850 %; could reverse recommendation if correct limit is lower.",
+      "suggested_fix": "Clarify which device (circuit relief vs Swagelok vent) the comparison targets; adjust numeric claim or units.",
+      "evidence": "Sea-level table row 80 \u00b0C: 0.207 bar(g); earlier sections define vent cracking 0.138 bar(g)."
+    },
+    {
+      "severity": "major",
+      "category": "equation-units",
+      "location": "math blocks throughout (e.g. eq-vtot)",
+      "issue": "Equation IDs placed on a separate line (` $$ {#eq-...}`) instead of same line as closing delimiter.",
+      "why_it_matters": "Pandoc drops the ID; all `@eq-...` references resolve to \u2018??\u2019, breaking cross-links.",
+      "suggested_fix": "Move `{#eq-id}` to the same line as \u201c$$\u201d.",
+      "evidence": "`$$V_{tot}=...$$` newline `{#eq-vtot}` pattern repeated in model section."
     },
     {
       "severity": "major",
       "category": "logical-flow",
-      "location": "failure-mechanism.qmd:46 (simulation call) vs \u00a7Temperature nomenclature",
-      "issue": "Baseline figure and representative-case table simulate a 20 \u00b0C cargo temperature, while the shipping envelope and screening equations use 40 \u00b0C as the worst case.",
-      "why_it_matters": "The illustrated \u201csafe baseline\u201d may not remain safe at the envelope extreme, potentially misleading readers about design margin.",
-      "suggested_fix": "Re-run the baseline and case studies at 40 \u00b0C, or insert a conspicuous note that the figure depicts nominal, not worst-case, conditions.",
-      "evidence": "`simulate_cycle(..., T_cargo_C = 20.0, ...)`; \u00a7Temperature nomenclature states `T_hot = 40 \u00b0C` per spec."
+      "location": "duplicate constants blocks lines 94, 904, 909",
+      "issue": "Seal-up and gas constants are defined three times with literals; one uses old 76.3 kPa cabin pressure.",
+      "why_it_matters": "Depending on execution order, different simulations see different constants, compromising reproducibility.",
+      "suggested_fix": "Create a single authoritative constants module or import YAML variables everywhere; delete duplicates.",
+      "evidence": "Code blocks at lines 95, 904 and 909 each assign `P_SEAL_PA`, `V_BAG_MAX_L`, etc."
+    },
+    {
+      "severity": "major",
+      "category": "logical-flow",
+      "location": "\u00a7Bag Volume Sensitivity caption and bullet 1",
+      "issue": "Calls ideal-vent case the \u201cworst-case valve\u201d, which is conceptually inverted.",
+      "why_it_matters": "Terminology confusion may mislead reviewers about conservative assumptions.",
+      "suggested_fix": "Rephrase as \u201cmost permissive valve (opens at 0 psig)\u201d or similar.",
+      "evidence": "Caption: \u201cideal-vent column \u2026 represents the worst-case valve\u201d."
+    },
+    {
+      "severity": "major",
+      "category": "render-crossref",
+      "location": "references to @tbl-vent-valve, @sec-upper-bound, etc.",
+      "issue": "Several labels are referenced but not defined in the file, producing unresolved \u201c??\u201d.",
+      "why_it_matters": "Broken links are a PDF build stopper and obscure provenance of critical specs.",
+      "suggested_fix": "Add the missing labelled elements or update references to existing IDs; run `quarto check` to list unresolved refs.",
+      "evidence": "Closure table row cites @tbl-vent-valve but no such table in outline."
     },
     {
       "severity": "major",
       "category": "source-of-truth",
-      "location": "failure-mechanism.qmd:313 vs generated/PIR-SH-001_quasistatic_report_summary.md",
-      "issue": "Ambient pressure for 8 000 ft cabin altitude is inconsistent (75.26 kPa in \u00a7Transport Envelope vs 76.3 kPa in generated summary).",
-      "why_it_matters": "All closed-form equations scale with ambient pressure; mismatched inputs propagate directly into design limits and case studies.",
-      "suggested_fix": "Adopt a single ISA-derived value (75 262 Pa) in both narrative and analysis code, then regenerate artifacts.",
-      "evidence": "Transport-envelope table shows \u201c75.26 kPa (0.743 atm)\u201d; generated MD summary lists \u201c0.753 \u00d7 1.01325 = 0.7630 bar abs\u201d."
+      "location": "temperature sweep definition lines 1088\u20131092 vs spec tables",
+      "issue": "Parametric sweep stops at 30 \u00b0C but conclusions claim coverage of the 10-40 \u00b0C transport envelope.",
+      "why_it_matters": "Un-analysed 30-40 \u00b0C range could shift vent/re-seat margins; recommendation to remove vent lacks bounding evidence.",
+      "suggested_fix": "Extend `T_cargo_arr` to 40 \u00b0C or qualify conclusions as provisional; regenerate figures.",
+      "evidence": "`T_cargo_arr = np.linspace(5, 30, 40)`; Summary and Decision sections state envelope up to 40 \u00b0C."
     },
     {
-      "severity": "major",
-      "category": "source-of-truth",
-      "location": "failure-mechanism.qmd:36 vs generated/PIR-SH-001_quasistatic_threshold_summary.tsv",
-      "issue": "Narrative thresholds (14.11 L, 50.21 L, 102.11 L) differ from generated TSV values (15.28 L, 52.55 L, 109.19 L).",
-      "why_it_matters": "Readers comparing prose to the downloadable data will see conflicting limits, undermining confidence and breaking automated regression tests that parse the TSV.",
-      "suggested_fix": "Re-run the MATLAB analysis and regenerate all TSV/MD artifacts with the 75 262 Pa input, or revert the narrative short-codes until regeneration is complete.",
-      "evidence": "Session log lists updated thresholds; the live TSV preview still shows the pre-correction numbers."
+      "severity": "minor",
+      "category": "equation-units",
+      "location": "simulate() definition (line 1000 approx.)",
+      "issue": "CoolProp called with Celsius temperatures.",
+      "why_it_matters": "CoolProp expects Kelvin; pressures, densities and \u2206P outputs are off by ~70 %, invalidating parametric surfaces if not converted elsewhere.",
+      "suggested_fix": "Convert all temperatures to Kelvin before `AS.update`; document expected units.",
+      "evidence": "`build_profile` returns `T_gas` created by `T_cargo_C+273.15` *only for some segments*; simulate() later passes `T_gas[i]` directly, but inputs like `T_cargo_C` are in \u00b0C as per docstring."
+    },
+    {
+      "severity": "minor",
+      "category": "render-crossref",
+      "location": "fig-alt attributes with {{< var >}}",
+      "issue": "Shortcodes inside `fig-alt` may not expand, leaving raw template text in HTML alt attributes.",
+      "why_it_matters": "Breaks accessibility and signals render errors.",
+      "suggested_fix": "Move variable-derived text into caption; keep alt text literal or populate via code.",
+      "evidence": "`fig-alt=\"\u2026 {{< var ideal-return-threshold-l >}} \u2026\"` in \u00a7Results figure."
     }
   ],
   "residual_risks": [
-    "Python chunks depend on CoolProp and scienceplots but the build recipe does not declare these packages; future CI images may lack them."
+    "40 \u00b0C transport-envelope data are still missing; extending the sweep could expose new failure regions.",
+    "Even after code-fence repair, multiple constant duplicates may shadow each other, causing silent numeric drift depending on execution order.",
+    "If valve datasheet proves a lower reseat pressure than assumed, the non-return-pressure mechanism may change, invalidating the vent-removal recommendation.",
+    "Unbalanced gauge/absolute pressure handling may persist in auxiliary scripts and figures after headline fixes."
   ],
   "sources_checked": [
     "_shared\\_metadata.yml",

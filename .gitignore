@@ -29,8 +29,12 @@ test-plan_files/
 # -------- Rendered output (regenerable) -------------------------------------
 # These are the deliverables — easy to regenerate from source. Excluded
 # from version control to keep the repo lean. Run `quarto render` to rebuild.
-_output/
-projects/*/_output/
+# Root-level _output only (not recursive)
+/_output/
+# Ignore contents of project _output dirs, but not the dirs themselves
+projects/*/_output/*
+# Track Word deliverables (the primary output format for distribution)
+!projects/*/_output/*.docx
 
 # -------- Quarto _freeze cache ----------------------------------------------
 # IMPORTANT: Quarto recommends committing _freeze/ so that downstream
@@ -81,6 +85,9 @@ local.settings.json
 
 # -------- Jupyter ------------------------------------------------------------
 **/.ipynb_checkpoints/
+
+# -------- Claude Memory Compiler (cloned repo, self-contained) --------------
+claude-memory-compiler/
 
 # -------- Logs (selective) --------------------------------------------------
 fork-terminal.log
